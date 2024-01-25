@@ -80,7 +80,8 @@ DATABASES = {
         'NAME': 'unfollowed',
         'USER': 'user',
         'PASSWORD': 'password',
-        'HOST': 'db',  # Or use the service name defined in docker-compose
+        'HOST' : '172.18.0.2',
+        # 'HOST': 'db',  # Or use the service name defined in docker-compose / the ip
         'PORT': '6543',
     }
 }
