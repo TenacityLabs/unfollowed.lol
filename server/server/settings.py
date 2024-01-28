@@ -77,14 +77,14 @@ WSGI_APPLICATION = 'server.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'unfollowed',
-        'USER': 'user',
-        'PASSWORD': 'password',
-        'HOST' : '172.18.0.2',
-        # 'HOST': 'db',  # Or use the service name defined in docker-compose / the ip
-        'PORT': '6543',
+        'NAME': 'unfollowed',  
+        'USER': 'user',        
+        'PASSWORD': 'postgres',
+        'HOST': 'localhost',          
+        'PORT': '6543',  
     }
 }
+
 
 
 # Password validation
