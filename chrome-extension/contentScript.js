@@ -1,3 +1,17 @@
+// Construct the URL to the web-accessible font file
+const fontUrl = chrome.runtime.getURL("assets/fonts/red-hat-text/RedHatText-VariableFont_wght.ttf");
+
+// Create a style element with the @font-face rule
+const style = document.createElement('style');
+style.type = 'text/css';
+style.innerHTML = `
+@font-face {
+    font-family: 'Red Hat Text';
+    src: url('${fontUrl}') format('truetype');
+}
+`;
+document.head.appendChild(style);
+
 chrome.runtime.sendMessage({ username: 'lucas.shen21' }, function (response) {
   console.log(response)
 })
@@ -16,6 +30,7 @@ function handleButtonClick(event) {
 }
 
 // Function to inject buttons and set up event listeners
+// TODO: This should check for valid routes, also, this should only work on actual usernames, not random <h2> elements
 function injectButtonsAndListeners() {
   // Remove existing buttons to prevent duplicates
   if (document.getElementsByClassName('custom-ig-button').length > 0) {
@@ -26,15 +41,27 @@ function injectButtonsAndListeners() {
 
   // Find all <h2> elements (usernames) and inject buttons
   const usernameElements = document.querySelectorAll('h2');
+  let username = ''
   usernameElements.forEach(elem => {
-    const username = elem.textContent;
+    if (elem.textContent !== 'Follow') {
+      username = elem.textContent
+    }
+  })
 
+  const settingsElements = document.querySelectorAll('.x1q0g3np .x2lah0s .x8j4wrb');
+  settingsElements.forEach(elem => {
     const button = document.createElement('button');
     button.textContent = 'Process User';
     button.setAttribute('data-username', username); // Store the username in the button
     button.addEventListener('click', handleButtonClick); // Add click event listener
     button.classList.add('custom-ig-button'); // Add a class to identify buttons added by your extension
-    elem.parentNode.insertBefore(button, elem.nextSibling);
+    button.classList.add('gradient-border');
+
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('gradient-border-wrapper'); // Class for the gradient border effect
+    wrapper.appendChild(button); // Add the button inside the wrapper
+
+    elem.parentNode.insertBefore(wrapper, elem.nextSibling);
   })
 }
 

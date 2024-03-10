@@ -4,6 +4,8 @@
 
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  /*
+  TODO: Restart
   const { username } = request
 
   userFollowing(username)
@@ -17,6 +19,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
 
   return true
+  */
 })
 
 async function userFollowing(username) {
@@ -39,9 +42,9 @@ async function userFollowing(username) {
 
     let userId
     const userQueryJson = await userQueryRes.json();
-    for (let zeta of userQueryJson.users) {
-      if (zeta.user.username === username) {
-        userId = zeta.user.pk
+    for (let foundUser of userQueryJson.users) {
+      if (foundUser.user.username === username) {
+        userId = foundUser.user.pk
       }
     }
 

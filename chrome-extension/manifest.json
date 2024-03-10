@@ -19,6 +19,9 @@
       "matches": [
         "https://*.instagram.com/*"
       ],
+      "css": [
+        "custom.css"
+      ],
       "js": [
         "contentScript.js"
       ]
@@ -27,7 +30,8 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "assets/betUFC.png"
+        "assets/betUFC.png",
+        "assets/fonts/red-hat-text/RedHatText-VariableFont_wght.ttf"
       ],
       "matches": [
         "https://*.instagram.com/*"
