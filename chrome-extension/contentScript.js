@@ -3,7 +3,6 @@ const fontUrl = chrome.runtime.getURL("assets/fonts/red-hat-text/RedHatText-Vari
 
 // Create a style element with the @font-face rule
 const style = document.createElement('style');
-style.type = 'text/css';
 style.innerHTML = `
 @font-face {
     font-family: 'Red Hat Text';
@@ -11,11 +10,6 @@ style.innerHTML = `
 }
 `;
 document.head.appendChild(style);
-
-chrome.runtime.sendMessage({ username: 'lucas.shen21' }, function (response) {
-  console.log(response)
-})
-
 
 // This function will be called when the button is clicked
 function handleButtonClick(event) {

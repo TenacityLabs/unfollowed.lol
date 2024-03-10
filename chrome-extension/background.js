@@ -4,8 +4,6 @@
 
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  /*
-  TODO: Restart
   const { username } = request
 
   userFollowing(username)
@@ -19,7 +17,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
 
   return true
-  */
 })
 
 async function userFollowing(username) {

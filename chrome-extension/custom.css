@@ -1,5 +1,5 @@
 .gradient-border-wrapper {
-  margin-left: 1.5rem;
+  margin-left: 1.3rem;
   background: transparent;
   background-image: linear-gradient(90deg, white, white),
     linear-gradient(25deg, #4D6DF4 0%, #AB33FA 49%, #FFA800 100%);
@@ -15,9 +15,9 @@
   -webkit-background-clip: text;
   color: transparent;
   font-weight: 600;
-  font-size: 1.25rem;
-  line-height: 1.5rem;
+  font-size: 1.2rem;
+  line-height: 1.6rem;
+  padding-right: 0.9rem;
+  padding-left: 0.9rem;
   border: none;
 }
-
-/* TEST */
