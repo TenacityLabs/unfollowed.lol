@@ -11,17 +11,39 @@ style.innerHTML = `
 `;
 document.head.appendChild(style);
 
-// This function will be called when the button is clicked
 function handleButtonClick(event) {
-  event.stopPropagation()
+  event.stopPropagation();
 
   const username = event.target.getAttribute('data-username');
-  console.log(username)
   // Send the username to the background script
-  chrome.runtime.sendMessage({ username: username }, response => {
+  chrome.runtime.sendMessage({ username: username }, async response => {
     console.log('Response from background:', response);
+
+    const postData = { ...response, username: username };
+    
+    try {
+      // TODO: Update this to put into .env or remember to switch during production
+      const apiUrl = 'http://127.0.0.1:8000/receive';
+      const fetchResponse = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postData),
+      });
+
+      if (!fetchResponse.ok) {
+        throw new Error(`HTTP error! status: ${fetchResponse.status}`);
+      }
+
+      const data = await fetchResponse.json();
+      console.log('Response from Django API:', data);
+    } catch (error) {
+      console.error('Error posting data to Django:', error);
+    }
   });
 }
+
 
 // Function to inject buttons and set up event listeners
 // TODO: This should check for valid routes, also, this should only work on actual usernames, not random <h2> elements
