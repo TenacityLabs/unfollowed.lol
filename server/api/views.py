@@ -1,6 +1,10 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from server.serializers import UserSerializer
+from server.models import User
+from django.http import JsonResponse
+import json
+
 
 @api_view(['GET'])
 def getData(request):
@@ -9,16 +13,26 @@ def getData(request):
 
 @api_view(['POST'])
 def receiveData(request):
+    data = json.loads(request.body)
+    print(data)
+    username = data.get('username')
+    user, created = User.objects.get_or_create(username=username)
 
-    followers_data = request.data.get('followers', [])
-    followings_data = request.data.get('followings', [])
-    unfollowers = request.data.get('dontFollowMeBack', [])
-
-
-    for user_data in unfollowers:
-        serializer = UserSerializer(data=user_data)
-        if serializer.is_valid():
-            serializer.save()
-
-    return Response({"status": "success"})
-
+    for field in ['followers', 'followings', 'unfollowers', 'fans']:
+        related_users = data.get(field, [])
+        for related_user_data in related_users:
+            related_user, _ = User.objects.get_or_create(
+                username=related_user_data['username'],
+                defaults={'insta_name': related_user_data.get('insta_name', '')}
+            )
+            
+            if field == 'followers':
+                user.followers.add(related_user)
+            elif field == 'followings':
+                user.following.add(related_user)
+            elif field == 'unfollowers':
+                user.unfollowers.add(related_user)
+            elif field == 'fans':
+                user.fans.add(related_user)
+                
+    return Response({'status': 'success'})
