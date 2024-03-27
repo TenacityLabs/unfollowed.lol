@@ -1,28 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="nouser-html">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>unfollowed.lol</title>
+  <link rel="stylesheet" href="loader.css">
   <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="profile.css">
   <script src="popup.js"></script>
 </head>
 
-<body class="popup">
-  <div class="main">
-    <h1>unfollowed.lol</h1>
-    <div>View and track your unfollows quickly and simply.</div>
-    <button class="action" id="analysis">
-      <image src="./assets/arrow.png" />
-      <span>Start Analysis</span>
-    </button>
-    <a class="action" id="goto" href="https://www.instagram.com/" target="_blank">
-      <image src="./assets/arrow.png" />
-      <span>Go to Instagram</span>
-    </a>
+<body class="nouser-body">
+  <div class="loader hidden" id="loader">
+    <div class="loader-text">
+      <p>Gathering fans and searching hard for unfollowers...</p>
+    </div>
+    <span><i></i></span>
   </div>
-  <div class="bottom-white">
+
+  <div class="" id="nouser">
+    <div class="main">
+      <h1>unfollowed.lol</h1>
+      <div>View and track your unfollows quickly and simply.</div>
+      <button class="action" id="analysis">
+        <image src="./assets/arrow.png" />
+        <span>Start Analysis</span>
+      </button>
+      <a class="action" id="goto" href="https://www.instagram.com/" target="_blank">
+        <image src="./assets/arrow.png" />
+        <span>Go to Instagram</span>
+      </a>
+    </div>
+    <div class="bottom-white">
+    </div>
+  </div>
+
+  <div class="hidden" id="profile">
+    <h1>
+      <span class="title-light">Un</span><span class="title-dark">followed.lol</span>
+    </h1>
+    <section class="time-section">
+      <h3 class="time-title">Yesterday</h3>
+      <div class="profile-card">
+        <img class="profile-picture" src="https://randomuser.me/api/portraits/men/82.jpg" />
+        <div class="profile-info">
+          <div class="profile-person">
+            <b>@johndoe</b> and others
+          </div>
+          <div class="profile-action">
+            Unfollowed you
+          </div>
+        </div>
+      </div>
+    </section>
+    <button id="button1">Click me</button>
   </div>
 </body>
 
