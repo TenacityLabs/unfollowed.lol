@@ -31,8 +31,6 @@ async function userFollowing(username) {
   iDontFollowBack = [];
 
   try {
-    console.log(`Process started! Give it a couple of seconds`);
-
     const userQueryRes = await fetch(
       `https://www.instagram.com/web/search/topsearch/?query=${username}`
     );
@@ -76,8 +74,6 @@ async function userFollowing(username) {
         });
     }
 
-    console.log({ followers });
-
     after = null;
     has_next = true;
 
@@ -109,15 +105,11 @@ async function userFollowing(username) {
         });
     }
 
-    console.log({ followings });
-
     dontFollowMeBack = followings.filter((following) => {
       return !followers.find(
         (follower) => follower.username === following.username
       );
     });
-
-    console.log({ dontFollowMeBack });
 
     iDontFollowBack = followers.filter((follower) => {
       return !followings.find(

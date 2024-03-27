@@ -5,19 +5,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>unfollowed.lol</title>
-  <link rel="stylesheet" href="loader.css">
   <link rel="stylesheet" href="index.css">
   <link rel="stylesheet" href="profile.css">
+  <script src="lottie.min.js"></script>
   <script src="popup.js"></script>
 </head>
 
 <body class="nouser-body">
-  <div class="loader hidden" id="loader">
+  <!-- <div class="loader hidden" id="loader">
     <div class="loader-text">
       <p>Gathering fans and searching hard for unfollowers...</p>
     </div>
     <span><i></i></span>
-  </div>
+  </div> -->
 
   <div class="" id="nouser">
     <div class="main">
@@ -31,6 +31,9 @@
         <image src="./assets/arrow.png" />
         <span>Go to Instagram</span>
       </a>
+      <button class="action" id="loading">
+        <div class="loading-animation" id="loading-animation"></div>
+      </button>
     </div>
     <div class="bottom-white">
     </div>

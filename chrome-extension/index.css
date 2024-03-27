@@ -50,7 +50,7 @@
   cursor: pointer;
   bottom: 0;
   transform: translate(0, 50%);
-  padding: 1.3rem 0 1.3rem 0;
+  height: 5rem;
   background-color: #ffffff5e;
   backdrop-filter: blur(50px);
   border-radius: 1000px;
@@ -73,6 +73,11 @@
 .action span {
   font-size: 1rem;
   font-weight: 500;
+}
+
+.loading-animation {
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .bottom-white {
