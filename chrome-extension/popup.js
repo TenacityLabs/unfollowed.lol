@@ -38,15 +38,17 @@ document.addEventListener('DOMContentLoaded', function () {
         const username = res[0].result
 
         chrome.runtime.sendMessage({ username: username }, response => {
-          if (!response.followers || !response.followings || !response.dontFollowMeBack || !response.iDontFollowBack) {
+          console.log(response)
+          if (!response.followers || !response.followings || !response.unfollowers || !response.fans) {
             alert('An error as occured, please try again')
             return
           }
-          const { followers, followings, dontFollowMeBack, iDontFollowBack } = response
+          const { followers, followings, unfollowers, fans } = response
+          console.log({ followers, followings, unfollowers, fans })
 
           // FIXME, remove the temp
           // chrome.storage.local.set({ username }, function () {
-          chrome.storage.local.set({ username: "TEMP", followers, followings, dontFollowMeBack, iDontFollowBack }, function () {
+          chrome.storage.local.set({ username: "TEMP", followers, followings, unfollowers, fans }, function () {
             document.documentElement.className = 'profile-html'
             document.body.className = 'profile-body'
             document.getElementById('nouser').className = 'hidden'
@@ -100,13 +102,13 @@ document.addEventListener('DOMContentLoaded', function () {
 async function userFollowing(username) {
   let followers = [{ username: "", full_name: "" }];
   let followings = [{ username: "", full_name: "" }];
-  let dontFollowMeBack = [{ username: "", full_name: "" }];
-  let iDontFollowBack = [{ username: "", full_name: "" }];
+  let unfollowers = [{ username: "", full_name: "" }];
+  let fans = [{ username: "", full_name: "" }];
 
   followers = [];
   followings = [];
-  dontFollowMeBack = [];
-  iDontFollowBack = [];
+  unfollowers = [];
+  fans = [];
 
   try {
     console.log(`Process started! Give it a couple of seconds`);
@@ -189,21 +191,21 @@ async function userFollowing(username) {
 
     console.log({ followings });
 
-    dontFollowMeBack = followings.filter((following) => {
+    unfollowers = followings.filter((following) => {
       return !followers.find(
         (follower) => follower.username === following.username
       );
     });
 
-    console.log({ dontFollowMeBack });
+    console.log({ unfollowers });
 
-    iDontFollowBack = followers.filter((follower) => {
+    fans = followers.filter((follower) => {
       return !followings.find(
         (following) => following.username === follower.username
       );
     });
 
-    return { followers, followings, dontFollowMeBack, iDontFollowBack }
+    return { followers, followings, unfollowers, fans }
   } catch (err) {
     console.log({ err });
     return { err }

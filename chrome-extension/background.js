@@ -8,8 +8,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   userFollowing(username)
     .then(data => {
-      const { followers, followings, dontFollowMeBack, iDontFollowBack } = data
-      sendResponse({ followers, followings, dontFollowMeBack, iDontFollowBack })
+      const { followers, followings, unfollowers, fans } = data
+      sendResponse({ followers, followings, unfollowers, fans })
     })
     .catch(error => {
       console.error('Error in userFollowing:', error);
@@ -20,15 +20,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 })
 
 async function userFollowing(username) {
-  let followers = [{ username: "", full_name: "" }];
-  let followings = [{ username: "", full_name: "" }];
-  let dontFollowMeBack = [{ username: "", full_name: "" }];
-  let iDontFollowBack = [{ username: "", full_name: "" }];
+  let followers = [{ username: "", insta_name: "" }];
+  let followings = [{ username: "", insta_name: "" }];
+  let unfollowers = [{ username: "", insta_name: "" }];
+  let fans = [{ username: "", insta_name: "" }];
 
   followers = [];
   followings = [];
-  dontFollowMeBack = [];
-  iDontFollowBack = [];
+  unfollowers = [];
+  fans = [];
 
   try {
     const userQueryRes = await fetch(
@@ -67,7 +67,7 @@ async function userFollowing(username) {
             res.data.user.edge_followed_by.edges.map(({ node }) => {
               return {
                 username: node.username,
-                full_name: node.full_name,
+                insta_name: node.full_name,
               };
             })
           );
@@ -98,26 +98,27 @@ async function userFollowing(username) {
             res.data.user.edge_follow.edges.map(({ node }) => {
               return {
                 username: node.username,
-                full_name: node.full_name,
+                insta_name: node.full_name,
               };
             })
           );
         });
     }
 
-    dontFollowMeBack = followings.filter((following) => {
+    unfollowers = followings.filter((following) => {
       return !followers.find(
         (follower) => follower.username === following.username
       );
     });
 
-    iDontFollowBack = followers.filter((follower) => {
+
+    fans = followers.filter((follower) => {
       return !followings.find(
         (following) => following.username === follower.username
       );
     });
 
-    return { followers, followings, dontFollowMeBack, iDontFollowBack }
+    return { followers, followings, unfollowers, fans }
   } catch (err) {
     console.log({ err });
     return { err }

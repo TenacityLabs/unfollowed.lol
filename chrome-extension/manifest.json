@@ -10,7 +10,8 @@
   ],
   "host_permissions": [
     "https://*.instagram.com/*",
-    "https://*.unfollowed.lol/*"
+    "https://*.unfollowed.lol/*",
+    "http://127.0.0.1:8000/*"
   ],
   "background": {
     "service_worker": "background.js"
