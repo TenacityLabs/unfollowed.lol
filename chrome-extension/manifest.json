@@ -5,7 +5,8 @@
   "description": "Track your following on Instagram as well as your friend's following to see who unfollowed you.",
   "permissions": [
     "storage",
-    "tabs"
+    "tabs",
+    "scripting"
   ],
   "host_permissions": [
     "https://*.instagram.com/*",
