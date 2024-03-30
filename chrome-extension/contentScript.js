@@ -15,6 +15,19 @@ function handleButtonClick(event) {
   event.stopPropagation();
 
   const username = event.target.getAttribute('data-username');
+  const buttons = document.getElementsByClassName('custom-ig-button')
+  if (buttons.length !== 1) {
+    alert('Unexpected error, cannot find processing user button')
+    return
+  }
+  const button = buttons[0]
+  if (button.textContent === 'View Analytics') {
+    window.location.href = `https://unfollowed.lol/${username}`
+    return
+  }
+  button.disabled = true
+  button.textContent = 'Processing...'
+
   // Send the username to the background script
   chrome.runtime.sendMessage({ username: username }, async response => {
     const postData = { ...response, username: username };
@@ -22,6 +35,8 @@ function handleButtonClick(event) {
 
     try {
       // TODO: Update this to put into .env or remember to switch during production
+      // TODO: Use django api
+      /*
       const apiUrl = 'http://127.0.0.1:8000/receive';
       const fetchResponse = await fetch(apiUrl, {
         method: 'POST',
@@ -36,8 +51,13 @@ function handleButtonClick(event) {
       }
 
       const data = await fetchResponse.json();
-      console.log('Response from Django API:', data);
+      */
+      button.textContent = 'View Analytics'
+      button.disabled = false
+      // console.log('Response from Django API:', data);
     } catch (error) {
+      button.textContent = 'Process User'
+      alert(`Error fetching: ${username}`)
       console.error('Error posting data to Django:', error);
     }
   });
@@ -77,11 +97,7 @@ function injectButtonsAndListeners() {
     button.classList.add('custom-ig-button'); // Add a class to identify buttons added by your extension
     button.classList.add('gradient-border');
 
-    const wrapper = document.createElement('div');
-    wrapper.classList.add('gradient-border-wrapper'); // Class for the gradient border effect
-    wrapper.appendChild(button); // Add the button inside the wrapper
-
-    elem.parentNode.insertBefore(wrapper, elem.nextSibling);
+    elem.parentNode.insertBefore(button, elem.nextSibling);
   })
 }
 
