@@ -40,10 +40,10 @@ def receiveData(request):
 @api_view(['GET'])
 def userProfile(request, username):
     user = User.objects.get(username=username)
-    followers = list(user.followers.all().values_list('username', flat=True))
-    following = list(user.following.all().values_list('username', flat=True))
-    fans = list(user.fans.all().values_list('username', flat=True))
-    unfollowers = list(user.unfollowers.all().values_list('username', flat=True))
+    followers = list(user.followers.all().values('username', 'insta_name'))
+    following = list(user.following.all().values('username', 'insta_name'))
+    fans = list(user.fans.all().values('username', 'insta_name'))
+    unfollowers = list(user.unfollowers.all().values('username', 'insta_name'))
 
     return Response({
         'username': user.username,
