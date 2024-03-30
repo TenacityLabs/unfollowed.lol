@@ -10,7 +10,17 @@ There are some other changes that were made in this PR as well:
 - changing the name from unfollowers to fans
 - connecting the extension to the backend
 
-### If you have trouble setting this up on your end, here might be some helpful scripts:
+### Setup Server
+
+**Install all the requirements in your local machine or venv**
+If you're using an venv, please run this command first to activate it:
+```
+source venv/bin/activate
+```
+Install the requirements
+```
+pip install -r requirements.txt
+```
 
 **Be sure to run your docker server first and to reload your Google Extension**
 ```
