@@ -36,3 +36,16 @@ def receiveData(request):
                 user.fans.add(related_user)
                 
     return Response({'status': 'success'})
+
+@api_view(['GET'])
+def userProfile(request, username):      
+    user = User.objects.get(username=username)
+    data = {
+        'username': user.username,
+        'insta_name': user.insta_name,
+    }    
+    
+    relationships = ['followers', 'following', 'fans', 'unfollowers'] 
+    data.update({rel: list(getattr(user, rel).all().values_list('username', flat=True)) for rel in relationships})
+    
+    return Response(data)
