@@ -11,9 +11,11 @@
   right: 0rem;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
+  cursor: pointer;
 }
 
 .custom-ig-button {
+  cursor: pointer;
   background-image: linear-gradient(25deg, #4D6DF4 0%, #AB33FA 49%, #FFA800 100%);
   background-clip: text;
   -webkit-background-clip: text;

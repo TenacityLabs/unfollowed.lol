@@ -38,8 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const username = res[0].result
 
         chrome.runtime.sendMessage({ username: username }, response => {
-          console.log(response)
-          if (!response.followers || !response.followings || !response.unfollowers || !response.fans) {
+          if (!response || !response.followers || !response.followings || !response.unfollowers || !response.fans) {
             alert('An error as occured, please try again')
             return
           }

@@ -12,39 +12,39 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       sendResponse({ followers, followings, unfollowers, fans })
     })
     .catch(error => {
-      console.error('Error in userFollowing:', error);
-      sendResponse({ error: error.message });
-    });
+      console.error('Error in userFollowing:', error)
+      sendResponse({ error: error.message })
+    })
 
   return true
 })
 
 async function userFollowing(username) {
-  let followers = [{ username: "", insta_name: "" }];
-  let followings = [{ username: "", insta_name: "" }];
-  let unfollowers = [{ username: "", insta_name: "" }];
-  let fans = [{ username: "", insta_name: "" }];
+  let followers = [{ username: "", insta_name: "" }]
+  let followings = [{ username: "", insta_name: "" }]
+  let unfollowers = [{ username: "", insta_name: "" }]
+  let fans = [{ username: "", insta_name: "" }]
 
-  followers = [];
-  followings = [];
-  unfollowers = [];
-  fans = [];
+  followers = []
+  followings = []
+  unfollowers = []
+  fans = []
 
   try {
     const userQueryRes = await fetch(
       `https://www.instagram.com/web/search/topsearch/?query=${username}`
-    );
+    )
 
     let userId
-    const userQueryJson = await userQueryRes.json();
+    const userQueryJson = await userQueryRes.json()
     for (let foundUser of userQueryJson.users) {
       if (foundUser.user.username === username) {
         userId = foundUser.user.pk
       }
     }
 
-    let after = null;
-    let has_next = true;
+    let after = null
+    let has_next = true
 
     while (has_next) {
       await fetch(
@@ -61,8 +61,8 @@ async function userFollowing(username) {
       )
         .then((res) => res.json())
         .then((res) => {
-          has_next = res.data.user.edge_followed_by.page_info.has_next_page;
-          after = res.data.user.edge_followed_by.page_info.end_cursor;
+          has_next = res.data.user.edge_followed_by.page_info.has_next_page
+          after = res.data.user.edge_followed_by.page_info.end_cursor
           followers = followers.concat(
             res.data.user.edge_followed_by.edges.map(({ node }) => {
               return {
@@ -74,8 +74,8 @@ async function userFollowing(username) {
         });
     }
 
-    after = null;
-    has_next = true;
+    after = null
+    has_next = true
 
     while (has_next) {
       await fetch(
@@ -99,24 +99,23 @@ async function userFollowing(username) {
               return {
                 username: node.username,
                 insta_name: node.full_name,
-              };
+              }
             })
-          );
-        });
+          )
+        })
     }
 
     unfollowers = followings.filter((following) => {
       return !followers.find(
         (follower) => follower.username === following.username
-      );
-    });
-
+      )
+    })
 
     fans = followers.filter((follower) => {
       return !followings.find(
         (following) => following.username === follower.username
-      );
-    });
+      )
+    })
 
     return { followers, followings, unfollowers, fans }
   } catch (err) {

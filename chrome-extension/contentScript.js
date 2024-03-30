@@ -17,10 +17,9 @@ function handleButtonClick(event) {
   const username = event.target.getAttribute('data-username');
   // Send the username to the background script
   chrome.runtime.sendMessage({ username: username }, async response => {
-    console.log('Response from background:', response);
-
     const postData = { ...response, username: username };
-    
+    console.log(postData)
+
     try {
       // TODO: Update this to put into .env or remember to switch during production
       const apiUrl = 'http://127.0.0.1:8000/receive';
@@ -49,22 +48,27 @@ function handleButtonClick(event) {
 // TODO: This should check for valid routes, also, this should only work on actual usernames, not random <h2> elements
 function injectButtonsAndListeners() {
   // Remove existing buttons to prevent duplicates
-  if (document.getElementsByClassName('custom-ig-button').length > 0) {
+  const existingBtns = document.querySelectorAll('.custom-ig-button')
+  if (existingBtns.length > 0) {
     return
   }
 
-  document.querySelectorAll('.custom-ig-button').forEach(button => button.remove());
 
   // Find all <h2> elements (usernames) and inject buttons
-  const usernameElements = document.querySelectorAll('h2');
-  let username = ''
-  usernameElements.forEach(elem => {
-    if (elem.textContent !== 'Follow') {
-      username = elem.textContent
-    }
-  })
+  const sectionElements = document.querySelectorAll('section')
+  const settingsElements = Array.from(sectionElements).filter(section => !section.querySelector('main'))
+  if (settingsElements.length === 0) {
+    return
+  }
+  let profileElement = settingsElements[0]
+  while (profileElement.firstElementChild) {
+    profileElement = profileElement.firstElementChild
+  }
+  if (profileElement.tagName !== 'H2' && profileElement.tagName !== 'H1') {
+    return
+  }
+  const username = profileElement.textContent.trim()
 
-  const settingsElements = document.querySelectorAll('.x1q0g3np .x2lah0s .x8j4wrb');
   settingsElements.forEach(elem => {
     const button = document.createElement('button');
     button.textContent = 'Process User';
@@ -94,5 +98,5 @@ const config = { childList: true, subtree: true };
 observer.observe(document.body, config);
 
 // Initial injection on script load
-injectButtonsAndListeners();
-
+injectButtonsAndListeners()
+window.onload = injectButtonsAndListeners
