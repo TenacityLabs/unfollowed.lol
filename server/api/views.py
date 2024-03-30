@@ -38,14 +38,18 @@ def receiveData(request):
     return Response({'status': 'success'})
 
 @api_view(['GET'])
-def userProfile(request, username):      
+def userProfile(request, username):
     user = User.objects.get(username=username)
-    data = {
+    followers = list(user.followers.all().values_list('username', flat=True))
+    following = list(user.following.all().values_list('username', flat=True))
+    fans = list(user.fans.all().values_list('username', flat=True))
+    unfollowers = list(user.unfollowers.all().values_list('username', flat=True))
+
+    return Response({
         'username': user.username,
         'insta_name': user.insta_name,
-    }    
-    
-    relationships = ['followers', 'following', 'fans', 'unfollowers'] 
-    data.update({rel: list(getattr(user, rel).all().values_list('username', flat=True)) for rel in relationships})
-    
-    return Response(data)
+        'followers': followers,
+        'following': following,
+        'fans': fans,
+        'unfollowers': unfollowers,
+    })
