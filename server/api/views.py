@@ -35,6 +35,9 @@ def receiveData(request):
             elif field == 'fans':
                 user.fans.add(related_user)
                 
+    user.isProcessed = True
+    user.save()
+
     return Response({'status': 'success'})
 
 @api_view(['GET'])
