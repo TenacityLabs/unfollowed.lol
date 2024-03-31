@@ -39,17 +39,17 @@ def receiveData(request):
 
 @api_view(['GET'])
 def userProfile(request, username):
-    user = User.objects.get(username=username)
-    followers = list(user.followers.all().values('username', 'insta_name'))
-    following = list(user.following.all().values('username', 'insta_name'))
-    fans = list(user.fans.all().values('username', 'insta_name'))
-    unfollowers = list(user.unfollowers.all().values('username', 'insta_name'))
 
-    return Response({
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+
+    return JsonResponse({
         'username': user.username,
         'insta_name': user.insta_name,
-        'followers': followers,
-        'following': following,
-        'fans': fans,
-        'unfollowers': unfollowers,
+        'followers': user.followers,
+        'following': user.following,
+        'fans': user.fans,
+        'unfollowers': user.unfollowers,
     })
