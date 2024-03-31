@@ -15,35 +15,27 @@ def getData(request):
 @api_view(['POST'])
 def receiveData(request):
     data = json.loads(request.body)
-    print(data)
     username = data.get('username')
+    insta_name = data.get('insta_name')
     user, created = User.objects.get_or_create(username=username)
 
     with transaction.atomic():
         for field in ['followers', 'followings', 'unfollowers', 'fans']:
-            related_users = data.get(field, [])
-            related_user_instances = []
-            for related_user_data in related_users:
-                related_user_instance, _ = User.objects.update_or_create(
-                    username=related_user_data['username'],
-                    defaults={'insta_name': related_user_data.get('insta_name', '')}
-                )
-                related_user_instances.append(related_user_instance)
+            related_users_data = data.get(field, [])
 
             if field == 'followers':
-                user.followers.add(*related_user_instances)
+                user.followers = related_users_data
             elif field == 'followings':
-                user.following.add(*related_user_instances)
+                user.following = related_users_data
             elif field == 'unfollowers':
-                user.unfollowers.add(*related_user_instances)
+                user.unfollowers = related_users_data
             elif field == 'fans':
-                user.fans.add(*related_user_instances)
+                user.fans = related_users_data
 
-    user.isProcessed = True
-    user.save()
+        user.isProcessed = True
+        user.save()
 
-    return Response({'status': 'success'})
-
+    return JsonResponse({'status': 'success'})
 
 @api_view(['GET'])
 def userProfile(request, username):
