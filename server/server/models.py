@@ -7,6 +7,8 @@ class User(models.Model):
     following = models.ManyToManyField('self', symmetrical=False, blank=True, related_name='user_following')
     fans = models.ManyToManyField('self', symmetrical=False, blank=True, related_name='user_fans')
     unfollowers = models.ManyToManyField('self', symmetrical=False, blank=True,related_name='user_unfollowers')
+    isProcessed = models.BooleanField(default=False)
+
 
 
     def __str__(self):
