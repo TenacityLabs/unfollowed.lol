@@ -12,3 +12,9 @@ class User(models.Model):
 
     def __str__(self):
         return self.username
+    
+class Transaction(models.Model):
+    from_user = JSONField()
+    to_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    action = models.CharField(max_length=10)
+    timestamp = models.DateTimeField(auto_now_add=True)
