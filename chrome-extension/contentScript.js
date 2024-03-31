@@ -22,7 +22,7 @@ function handleButtonClick(event) {
   }
   const button = buttons[0]
   if (button.textContent === 'View Analytics') {
-    window.location.href = `https://unfollowed.lol/${username}`
+    window.location.href = `https://unfollowed.lol/user/${username}`
     return
   }
   button.disabled = true
@@ -36,7 +36,7 @@ function handleButtonClick(event) {
     try {
       // TODO: Update this to put into .env or remember to switch during production
       // TODO: Use django api
-      /*
+
       const apiUrl = 'http://127.0.0.1:8000/receive';
       const fetchResponse = await fetch(apiUrl, {
         method: 'POST',
@@ -51,10 +51,11 @@ function handleButtonClick(event) {
       }
 
       const data = await fetchResponse.json();
-      */
+
       button.textContent = 'View Analytics'
       button.disabled = false
-      // console.log('Response from Django API:', data);
+      
+      console.log('Response from Django API:', data);
     } catch (error) {
       button.textContent = 'Process User'
       alert(`Error fetching: ${username}`)
