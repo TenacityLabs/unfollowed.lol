@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -81,16 +85,30 @@ WSGI_APPLICATION = 'server.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+
+# @Dev, this is local, we are using supabase rn
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'unfollowed',  
+#         'USER': 'user',        
+#         'PASSWORD': 'postgres',
+#         'HOST': 'localhost',          
+#         'PORT': '6543',  
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'unfollowed',  
-        'USER': 'user',        
-        'PASSWORD': 'postgres',
-        'HOST': 'localhost',          
-        'PORT': '6543',  
+        'NAME': 'postgres',
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv("DB_PWD"),
+        'HOST': os.getenv("DB_HOST"),
+        'PORT': '5432',
     }
 }
+
 
 
 
