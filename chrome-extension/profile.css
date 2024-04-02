@@ -37,6 +37,7 @@
 
 .profile-card {
   display: flex;
+  flex-direction: column;
   font-family: "Red Hat Text", sans-serif;
   font-optical-sizing: auto;
   font-weight: 450;

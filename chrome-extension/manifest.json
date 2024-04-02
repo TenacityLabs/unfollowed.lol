@@ -1,12 +1,13 @@
 {
   "name": "unfollowed.lol",
   "version": "1.0.0",
-  "author": "Edison Qu, Lucas Shen",
+  "author": "Edison Qu, Lucas Shen, Andrew Durnford",
   "description": "Track your following on Instagram as well as your friend's following to see who unfollowed you.",
   "permissions": [
     "storage",
     "tabs",
-    "scripting"
+    "scripting",
+    "cookies"
   ],
   "host_permissions": [
     "https://*.instagram.com/*",
