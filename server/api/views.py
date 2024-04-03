@@ -61,7 +61,7 @@ def userProfile(request, username):
     return JsonResponse(UserProfileSerializer(user).data)
 
 @api_view(['GET'])
-def getTransactions(request, username):
+def getRecentTransactions(request, username):
     try:
         user = User.objects.get(username=username)
     except User.DoesNotExist:
@@ -69,12 +69,67 @@ def getTransactions(request, username):
 
     day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
     week_ago = datetime.datetime.now() - datetime.timedelta(weeks=1)
-    last_day = Transaction.objects.filter(to_user=user, timestamp__gte=day_ago)
-    last_week = (Transaction.objects.filter(to_user=user, timestamp__gte=week_ago)).difference(last_day)
+    last_day = Transaction.objects.filter(to_user=user, timestamp__gte=day_ago).order_by('-timestamp')
+    last_week = (Transaction.objects.filter(to_user=user, timestamp__gte=week_ago)).difference(last_day).order_by('-timestamp')
 
     return JsonResponse({
         'today': TransactionSerializer(last_day[:3], many=True).data,
         'total_today': last_day.count(),
         'this_week': TransactionSerializer(last_week[:3], many=True).data,
-        'total_this_week': last_week.count()
+        'total_this_week': last_week.count() # doesn't include today (last 24 hrs)
     })
+
+@api_view(['GET'])
+def getAllTransactions(request, username):
+    
+    # Get user from database
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+    
+    # Get number of transactions to return, default to 0 if not provided or invalid
+    number = request.GET.get('number', default=0)
+    try:
+        number = int(number)
+        if number <= 0:
+            raise ValueError("Number must be positive")
+    except ValueError:
+        number = 0
+
+    day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
+    week_ago = datetime.datetime.now() - datetime.timedelta(weeks=1)
+    month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
+
+    transactions_last_day = Transaction.objects.filter(to_user=user, timestamp__gte=day_ago)
+    transactions_last_week = Transaction.objects.filter(to_user=user, timestamp__gte=week_ago)
+    transactions_last_month = Transaction.objects.filter(to_user=user, timestamp__gte=month_ago)
+    transactions_all = Transaction.objects.filter(to_user=user).order_by('-timestamp')
+
+    response = {
+        'last_day': {
+            'followed': len(transactions_last_day.filter(action='Followed')),
+            'unfollowed': len(transactions_last_day.filter(action='Unfollowed')),
+            'total': len(transactions_last_day)
+        },
+        'last_week': {
+            'followed': len(transactions_last_week.filter(action='Followed')),
+            'unfollowed': len(transactions_last_week.filter(action='Unfollowed')),
+            'total': len(transactions_last_week)
+        },
+        'last_month': {
+            'followed': len(transactions_last_month.filter(action='Followed')),
+            'unfollowed': len(transactions_last_month.filter(action='Unfollowed')),
+            'total': len(transactions_last_month)
+        },
+        'total': {
+            'followed': len(transactions_all.filter(action='Followed')),
+            'unfollowed': len(transactions_all.filter(action='Unfollowed')),
+            'total': len(transactions_all)
+        }
+    }
+
+    if number > 0:
+        response['transactions'] = TransactionSerializer(transactions_all[:number], many=True).data
+
+    return JsonResponse(response)
