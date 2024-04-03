@@ -4,10 +4,6 @@
   display: none;
 }
 
-html {
-  background: none;
-}
-
 .nouser-body {
   background-color: #0b0b0e;
   display: flex;
@@ -65,4 +61,23 @@ h1 {
   font-size: 1rem;
   font-weight: 400;
   margin: 1rem 0;
+}
+
+.action-hovering:hover {
+  cursor: pointer;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+svg {
+  display: inline;
+	position: relative;
+	height: 21px;
+	width: 21px;
+	margin-left: 0.5rem;
+  color: white;
 }

@@ -15,7 +15,6 @@
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  gap: 1rem;
 }
 
 .title-dark,
@@ -39,12 +38,17 @@
   font-weight: 700;
   font-size: 1rem;
   color: #262626;
-  padding: 0 1rem;
+  padding: 0;
+  text-align: left;
+  margin: 0.5rem;
 }
 
-.time-section {
+.transaction-section {
   display: flex;
   flex-direction: column;
+  width:90%;
+  border-bottom: 1px solid rgba(169, 169, 169, 0.2);
+  padding: 0 1.5rem 0.5rem 0.5rem;
 }
 
 .percent {
@@ -53,19 +57,10 @@
   color: #000F4E;
 }
 
-ul {
-  margin: 0;
-  padding-right: 2rem;
-}
-
 .profile-card {
   display: flex;
   flex-direction: column;
   font-family: "Red Hat Text", sans-serif;
-}
-
-.profile-action {
-  font-size: 1rem;
 }
 
 .profile-link {
@@ -79,5 +74,19 @@ ul {
   font-size: 1rem;
   font-family: "Red Hat Text", sans-serif;
   max-width: fit-content;
-  margin-bottom: 1rem;
+  margin: 1rem 0rem;
+}
+
+.transaction {
+  font-family: 'Red Hat Text', sans-serif;
+  color: black;
+  font-size: 0.9rem;
+  padding-left: 1rem;
+}
+
+.username {
+  font-family: "Red Hat Text", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #000F4E;
 }
