@@ -73,8 +73,8 @@ def getTransactions(request, username):
     last_week = (Transaction.objects.filter(to_user=user, timestamp__gte=week_ago)).difference(last_day)
 
     return JsonResponse({
-        'transactions today': TransactionSerializer(last_day[:3], many=True).data,
-        'total transactions today': last_day.count(),
-        'transactions this week': TransactionSerializer(last_week[:3], many=True).data,
-        'total transactions this week': last_week.count()
+        'today': TransactionSerializer(last_day[:3], many=True).data,
+        'total_today': last_day.count(),
+        'this_week': TransactionSerializer(last_week[:3], many=True).data,
+        'total_this_week': last_week.count()
     })

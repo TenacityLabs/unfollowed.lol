@@ -2,93 +2,115 @@ document.addEventListener('DOMContentLoaded', function () {
   // const text = document.querySelector('.loader-text p')
   // text.innerHTML = text.innerText.split("").map((char, i) => `<b style="transform:rotate(${i * 6.8}deg)">${char}</b>`).join("")
 
-  let username;
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    const currentTab = tabs[0];
 
-  chrome.cookies.get({ url: 'https://www.instagram.com', name: 'ds_user_id' }, function(cookie) {
-    if (cookie) {
-        const ds_user_id = cookie.value;
-        fetch(`https://www.instagram.com/graphql/query/?query_hash=c9100bf9110dd6361671f113dd02e7d6&variables=%7B%22user_id%22:%22${ds_user_id}%22,%22include_chaining%22:false,%22include_reel%22:true,%22include_suggested_users%22:false,%22include_logged_out_extras%22:false,%22include_highlight_reels%22:false,%22include_related_profiles%22:false%7D`)
-          .then(response => {
+    document.getElementById('analysis').addEventListener('click', async function () {
+      document.getElementById('goto').className = 'hidden'
+      document.getElementById('analysis').className = 'hidden'
+      document.getElementById('loading').className = 'action loading'
+      centerTextAnimation();
+
+      let username;
+      await getUsername().then(name => {
+        username = name;
+      }).catch(error => {
+        console.error('Error fetching username:', error);
+      });
+
+      // Send the username to the background script
+      chrome.runtime.sendMessage({ username: username }, async response => {
+        const postData = { ...response, username: username };
+        console.log(postData)
+
+        try {
+          // TODO: Update this to put into .env or remember to switch during production
+          // TODO: Use django api
+
+          const apiUrl = 'http://127.0.0.1:8000/receive';
+          const fetchResponse = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(postData),
+          });
+
+          if (!fetchResponse.ok) {
+            throw new Error(`HTTP error! status: ${fetchResponse.status}`);
+          }
+
+          const data = await fetchResponse.json();
+      
+          console.log('Response from Django API:', data);
+      
+          fetch(`http://127.0.0.1:8000/transactions/${username}/`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }).then(response => {
             if (!response.ok) {
               throw new Error('Network response was not ok');
             }
             return response.json();
-          })
-          .then(data => {
-            username = data.data.user.reel.user.username;
-          })
-          .catch(error => {
+          }).then(data => {
+            const link = document.createElement('button')
+            link.innerHTML = 'View full analysis'
+            link.setAttribute('class', 'profile-link')
+            link.setAttribute('id', 'profile-link')
+            link.addEventListener('click', function() {
+              window.open(`https://www.unfollowed.lol/user/${username}/`, '_blank'); 
+            });
+          
+            if (data.total_this_week == 0 || data.total_today == 0) {
+            
+              document.getElementById('unfollowers').innerHTML = (Math.round(postData.unfollowers.length / postData.followings.length * 100) || 0) + '%'
+              document.getElementById('fans').innerHTML = (Math.round(postData.fans.length / postData.followers.length * 100) || 0) + '%'
+              document.getElementById('nodata-profile').appendChild(link)
+              document.body.className = 'profile-body'
+              document.getElementById('nouser').className = 'hidden'
+              document.getElementById('nodata-profile').className = 'profile'
+          
+            } else {
+            
+              data.today.forEach(user => {
+                const transaction = document.createElement('div')
+                action = user.action.toLowerCase();
+                transaction.innerHTML = `<span class="username">@${user.from_user.username}</span> ${action} you`
+                transaction.setAttribute('class', 'transaction')
+                document.getElementById('today').appendChild(transaction)
+              });
+
+              data.this_week.forEach(user => {
+                const transaction = document.createElement('div')
+                action = user.action.toLowerCase();
+                transaction.innerHTML = `<span class="username">@${user.from_user.username}</span> ${action} you`
+                transaction.setAttribute('class', 'transaction')
+                document.getElementById('this-week').appendChild(transaction)
+              });
+
+              document.body.className = 'profile-body'
+              document.getElementById('nouser').className = 'hidden'
+              document.getElementById('profile').appendChild(link)
+              document.getElementById('profile').className = 'profile'
+            }
+          }).catch(error => {
             console.error('Error fetching data:', error);
           });
-    } else {
-        console.log('User not logged in.');
-    }
-  });
 
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    const currentTab = tabs[0];
-
-    lottie.loadAnimation({
-      container: document.getElementById('loading-animation'), // the dom element that will contain the animation
-      renderer: 'svg', // Render type: 'canvas', 'html' or 'svg'
-      loop: true, // If set to true, the animation will loop
-      autoplay: true, // If set to true, the animation will start playing automatically
-      path: './assets/loading.json' // the path to the animation json
-    });
-
-    document.getElementById('analysis').addEventListener('click', function () {
-      document.getElementById('goto').className = 'hidden'
-      document.getElementById('analysis').className = 'hidden'
-      loading = document.getElementById('loading').className = 'action'
-
-      // Send the username to the background script
-  chrome.runtime.sendMessage({ username: username }, async response => {
-    const postData = { ...response, username: username };
-    console.log(postData)
-
-    try {
-      // TODO: Update this to put into .env or remember to switch during production
-      // TODO: Use django api
-
-      const apiUrl = 'http://127.0.0.1:8000/receive';
-      const fetchResponse = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(postData),
+        } catch (error) {
+          alert(`Error fetching: ${username}`)
+          console.error('Error posting data to Django:', error);
+        }
       });
-
-      if (!fetchResponse.ok) {
-        throw new Error(`HTTP error! status: ${fetchResponse.status}`);
-      }
-
-      const data = await fetchResponse.json();
-      
-      console.log('Response from Django API:', data);
-      
-      document.getElementById('unfollowers').innerHTML = (Math.round(postData.unfollowers.length / postData.followings.length * 100) || 0) + '%'
-      document.getElementById('fans').innerHTML = (Math.round(postData.fans.length / postData.followers.length * 100) || 0) + '%'
-      document.documentElement.className = 'profile-html'
-      document.body.className = 'profile-body'
-      document.getElementById('nouser').className = 'hidden'
-      document.getElementById('profile').className = 'profile'
-      document.getElementById('link').addEventListener('click', function() {
-        window.open(`https://www.unfollowed.lol/user/${username}/`, '_blank'); 
-      });
-
-    } catch (error) {
-      alert(`Error fetching: ${username}`)
-      console.error('Error posting data to Django:', error);
-    }
-  });
-  })
+    })
 
     if (currentTab.url && currentTab.url.includes('instagram.com')) {
       // remove goto element from the popup
       document.getElementById('goto').className = 'hidden'
-      document.getElementById('analysis').className = 'action'
-      loading = document.getElementById('loading').className = 'hidden'
+      document.getElementById('analysis').className = 'action action-hovering'
+      document.getElementById('loading').className = 'hidden'
 
       // check if we've already fetched user data
       chrome.storage.local.get('username', function (data) {
@@ -108,7 +130,6 @@ document.addEventListener('DOMContentLoaded', function () {
           }, (res) => {
             const username = res[0].result
             if (username === storedUsername) {
-              document.documentElement.className = 'profile-html'
               document.body.className = 'profile-body'
               document.getElementById('nouser').className = 'hidden'
               document.getElementById('profile').className = ''
@@ -120,121 +141,52 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       document.getElementById('goto').className = 'action'
       document.getElementById('analysis').className = 'hidden'
-      loading = document.getElementById('loading').className = 'hidden'
+      document.getElementById('loading').className = 'hidden'
     }
   });
 })
 
-async function userFollowing(username) {
-  let followers = [{ username: "", full_name: "" }];
-  let followings = [{ username: "", full_name: "" }];
-  let unfollowers = [{ username: "", full_name: "" }];
-  let fans = [{ username: "", full_name: "" }];
-
-  followers = [];
-  followings = [];
-  unfollowers = [];
-  fans = [];
-
-  try {
-    console.log(`Process started! Give it a couple of seconds`);
-
-    const userQueryRes = await fetch(
-      `https://www.instagram.com/web/search/topsearch/?query=${username}`
-    );
-
-    let userId
-    const userQueryJson = await userQueryRes.json();
-    for (let foundUser of userQueryJson.users) {
-      if (foundUser.user.username === username) {
-        userId = foundUser.user.pk
+function getUsername() {
+  return new Promise((resolve, reject) => {
+    chrome.cookies.get({ url: 'https://www.instagram.com', name: 'ds_user_id' }, function(cookie) {
+      if (cookie) {
+        const ds_user_id = cookie.value;
+        fetch(`https://www.instagram.com/graphql/query/?query_hash=c9100bf9110dd6361671f113dd02e7d6&variables=%7B%22user_id%22:%22${ds_user_id}%22,%22include_chaining%22:false,%22include_reel%22:true,%22include_suggested_users%22:false,%22include_logged_out_extras%22:false,%22include_highlight_reels%22:false,%22include_related_profiles%22:false%7D`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then(data => {
+            const username = data.data.user.reel.user.username;
+            resolve(username);
+          })
+          .catch(error => {
+            console.error('Error fetching data:', error);
+            reject(error);
+          });
+      } else {
+        console.log('User not logged in.');
+        reject(new Error('User not logged in.'));
       }
-    }
-
-    let after = null;
-    let has_next = true;
-
-    while (has_next) {
-      await fetch(
-        `https://www.instagram.com/graphql/query/?query_hash=c76146de99bb02f6415203be841dd25a&variables=` +
-        encodeURIComponent(
-          JSON.stringify({
-            id: userId,
-            include_reel: true,
-            fetch_mutual: true,
-            first: 50,
-            after: after,
-          })
-        )
-      )
-        .then((res) => res.json())
-        .then((res) => {
-          has_next = res.data.user.edge_followed_by.page_info.has_next_page;
-          after = res.data.user.edge_followed_by.page_info.end_cursor;
-          followers = followers.concat(
-            res.data.user.edge_followed_by.edges.map(({ node }) => {
-              return {
-                username: node.username,
-                full_name: node.full_name,
-              };
-            })
-          );
-        });
-    }
-
-    console.log({ followers });
-
-    after = null;
-    has_next = true;
-
-    while (has_next) {
-      await fetch(
-        `https://www.instagram.com/graphql/query/?query_hash=d04b0a864b4b54837c0d870b0e77e076&variables=` +
-        encodeURIComponent(
-          JSON.stringify({
-            id: userId,
-            include_reel: true,
-            fetch_mutual: true,
-            first: 50,
-            after: after,
-          })
-        )
-      )
-        .then((res) => res.json())
-        .then((res) => {
-          has_next = res.data.user.edge_follow.page_info.has_next_page;
-          after = res.data.user.edge_follow.page_info.end_cursor;
-          followings = followings.concat(
-            res.data.user.edge_follow.edges.map(({ node }) => {
-              return {
-                username: node.username,
-                full_name: node.full_name,
-              };
-            })
-          );
-        });
-    }
-
-    console.log({ followings });
-
-    unfollowers = followings.filter((following) => {
-      return !followers.find(
-        (follower) => follower.username === following.username
-      );
     });
+  });
+}
 
-    console.log({ unfollowers });
 
-    fans = followers.filter((follower) => {
-      return !followings.find(
-        (following) => following.username === follower.username
-      );
-    });
-
-    return { followers, followings, unfollowers, fans }
-  } catch (err) {
-    console.log({ err });
-    return { err }
+async function centerTextAnimation() {
+  const text = "Gathering fans and searching hard for unfollowers";
+  const dots = ["", ".", "..", "..."];
+  let i = 0;
+  const textElement = document.getElementById('center-text')
+  while (document.getElementById('loading').className !== 'hidden') {
+    textElement.innerHTML = text + dots[i];
+    i = (i + 1) % 4;
+    await sleep(250);
   }
+}
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
