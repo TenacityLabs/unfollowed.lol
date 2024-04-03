@@ -28,18 +28,11 @@ document.addEventListener('DOMContentLoaded', function () {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     const currentTab = tabs[0];
 
-    lottie.loadAnimation({
-      container: document.getElementById('loading-animation'), // the dom element that will contain the animation
-      renderer: 'svg', // Render type: 'canvas', 'html' or 'svg'
-      loop: true, // If set to true, the animation will loop
-      autoplay: true, // If set to true, the animation will start playing automatically
-      path: './assets/loading.json' // the path to the animation json
-    });
-
     document.getElementById('analysis').addEventListener('click', function () {
+      document.getElementById('center-text').innerHTML = 'Gathering fans and searching hard for unfollowers...'
       document.getElementById('goto').className = 'hidden'
       document.getElementById('analysis').className = 'hidden'
-      loading = document.getElementById('loading').className = 'action'
+      document.getElementById('loading').className = 'action'
 
       // Send the username to the background script
   chrome.runtime.sendMessage({ username: username }, async response => {
@@ -73,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
       document.body.className = 'profile-body'
       document.getElementById('nouser').className = 'hidden'
       document.getElementById('profile').className = 'profile'
-      document.getElementById('link').addEventListener('click', function() {
+      document.getElementById('profile-link').addEventListener('click', function() {
         window.open(`https://www.unfollowed.lol/user/${username}/`, '_blank'); 
       });
 
@@ -88,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
       // remove goto element from the popup
       document.getElementById('goto').className = 'hidden'
       document.getElementById('analysis').className = 'action'
-      loading = document.getElementById('loading').className = 'hidden'
+      document.getElementById('loading').className = 'hidden'
 
       // check if we've already fetched user data
       chrome.storage.local.get('username', function (data) {
@@ -120,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       document.getElementById('goto').className = 'action'
       document.getElementById('analysis').className = 'hidden'
-      loading = document.getElementById('loading').className = 'hidden'
+      document.getElementById('loading').className = 'hidden'
     }
   });
 })

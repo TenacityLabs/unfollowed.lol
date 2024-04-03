@@ -4,16 +4,16 @@
   display: none;
 }
 
-.nouser-html {
-  padding: 0;
-  margin: 0;
-  border: none;
-  background: url('./assets/gradient.png');
-  background-size: cover;
+html {
+  background: none;
 }
 
 .nouser-body {
-  width: 20rem;
+  background-color: #0b0b0e;
+  display: flex;
+  flex-direction: column;
+  width: 18rem;
+  height: 24rem;
   margin: 0;
   padding: 0;
 }
@@ -23,64 +23,46 @@
   color: white;
   display: flex;
   flex-direction: column;
-  padding: 2.4rem 2.4rem 3.5rem 2.4rem;
-  font-family: "Inter", sans-serif;
+  justify-content: space-between;
+  align-items: center; 
+  padding: 2rem;
+  font-family: "Red Hat Text", sans-serif;
   font-optical-sizing: auto;
   font-style: normal;
   font-variation-settings: "slnt" 0;
   position: relative;
+  flex-grow: 1;
 }
 
-.main h1 {
+h1 {
   margin: 0;
-  padding: 0;
+  padding: 1rem 0rem;
   font-weight: 700;
   font-size: 1.65rem;
+  text-align: center;
 }
 
 .main div {
-  margin-top: 0.8rem;
   font-size: 1rem;
-  line-height: 1.3rem;
-  font-weight: 400;
+  font-weight: 600;
+  text-align: center;
 }
 
 .action {
-  position: absolute;
-  cursor: pointer;
-  bottom: 0;
-  transform: translate(0, 50%);
-  height: 5rem;
-  background-color: #ffffff5e;
-  backdrop-filter: blur(50px);
-  border-radius: 1000px;
-  border: 2px #EAEAEA solid;
-  width: calc(100% - 4.8rem);
-  color: black;
-  text-decoration: none;
-
-  display: flex;
+  color: white;
+  text-align: center; 
+  font-size: 1rem; 
+  background-image: linear-gradient(to right, #FFA800, #AB33FA, #4D6DF4);
+  border-radius: 0.75rem;
   justify-content: center;
   align-items: center;
-}
-
-.action img {
-  width: 1.2rem;
-  height: 1.3rem;
-  margin-right: 0.8rem;
-}
-
-.action span {
+  text-decoration: none;
+  padding: 0.75rem 1rem;
+  min-width: 6.125rem;
+  max-width: fit-content;
+  max-height: fit-content;
+  border: none;
   font-size: 1rem;
-  font-weight: 500;
-}
-
-.loading-animation {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-
-.bottom-white {
-  background: white;
-  height: 4rem;
+  font-weight: 400;
+  margin: 1rem 0;
 }
