@@ -1,66 +1,92 @@
-@import url('https://fonts.googleapis.com/css2?family=Arvo:ital,wght@0,400;0,700;1,400;1,700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Arvo:ital,wght@0,400;0,700;1,400;1,700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Red+Hat+Text:ital,wght@0,300..700;1,300..700&display=swap');
-
-:root {
-  --primary-highlight: #7993FF;
-  --primary-dark: #000F4E;
-}
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Text:wght@400;500;700&display=swap');
 
 .profile-body {
-  width: 20rem;
-  margin: 1.85rem 1.7rem 1.85rem 1.7rem;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  width: 18rem;
+  margin: 0;
+  padding: 0;
+  border: 1px solid lightgray;
+}
+
+.profile {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
 }
 
 .title-dark,
 .title-light {
-  font-family: "Arvo", serif;
+  font-family: "Red Hat Text", serif;
   font-weight: 700;
   font-size: 1.45rem;
   font-style: normal;
 }
 
 .title-dark {
-  color: var(--primary-dark);
+  color: #000F4E;
 }
 
 .title-light {
-  color: var(--primary-highlight);
+  color: #7993FF;
 }
 
 .time-title {
   font-family: "Red Hat Text", sans-serif;
-  font-optical-sizing: auto;
   font-weight: 700;
-  font-size: 1.15rem;
-  font-style: normal;
+  font-size: 1rem;
+  color: #262626;
+  padding: 0;
+  text-align: left;
+  margin: 0.5rem;
+}
+
+.transaction-section {
+  display: flex;
+  flex-direction: column;
+  width:90%;
+  border-bottom: 1px solid rgba(169, 169, 169, 0.2);
+  padding: 0 1.5rem 0.5rem 0.5rem;
+}
+
+.percent {
+  font-family: "Red Hat Text", sans-serif;
+  font-weight: 700;
+  color: #000F4E;
 }
 
 .profile-card {
   display: flex;
-  font-family: "Red Hat Text", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 450;
-  font-style: normal;
-}
-
-.profile-picture {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 50%;
-}
-
-.profile-info {
-  margin-left: 0.6rem;
-  display: flex;
   flex-direction: column;
-  margin-top: 0.1rem;
-  gap: 0.3rem;
+  font-family: "Red Hat Text", sans-serif;
 }
 
-.profile-person {
-  font-size: 1.05rem;
+.profile-link {
+  color: white;
+  cursor: pointer;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  background-color: #000F4E;
+  font-weight: 400;
+  font-size: 1rem;
+  font-family: "Red Hat Text", sans-serif;
+  max-width: fit-content;
+  margin: 1rem 0rem;
 }
 
-.profile-action {
-  font-size: 0.95rem;
+.transaction {
+  font-family: 'Red Hat Text', sans-serif;
+  color: black;
+  font-size: 0.9rem;
+  padding-left: 1rem;
+}
+
+.username {
+  font-family: "Red Hat Text", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #000F4E;
 }
