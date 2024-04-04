@@ -541,7 +541,7 @@ function App() {
                             <button
                                 className='button-control button-pause'
                                 onClick={pauseScan}>
-                                    {scanningPaused ? 'Resume' : 'Pause'}
+                                {scanningPaused ? 'Resume' : 'Pause'}
                             </button>
                         </div>
                         <div className='grow t-center'>
@@ -885,7 +885,7 @@ function App() {
                                 // regarding what exactly is selected while scanning in progress.
                                 disabled={
                                     // if paused, allow to select all even if scan is not completed.
-                                  state.percentage < 100 && !scanningPaused
+                                    state.percentage < 100 && !scanningPaused
                                 }
                                 checked={
                                     state.selectedResults.length ===
@@ -909,7 +909,7 @@ function App() {
                                 // regarding what exactly is selected while scanning in progress.
                                 disabled={
                                     // if paused, allow to select all even if scan is not completed.
-                                  state.percentage < 100 && !scanningPaused
+                                    state.percentage < 100 && !scanningPaused
                                 }
                                 checked={
                                     state.selectedResults.length ===

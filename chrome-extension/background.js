@@ -68,6 +68,7 @@ async function userFollowing(username) {
               return {
                 username: node.username,
                 insta_name: node.full_name,
+                avatar_url: node.profile_pic_url,
               };
             })
           );
@@ -99,6 +100,7 @@ async function userFollowing(username) {
               return {
                 username: node.username,
                 insta_name: node.full_name,
+                avatar_url: node.profile_pic_url,
               }
             })
           )
