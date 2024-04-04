@@ -8,8 +8,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   userFollowing(username)
     .then(data => {
-      const { followers, followings, unfollowers, fans } = data
-      sendResponse({ followers, followings, unfollowers, fans })
+      const { followers, followings, unfollowers, fans, insta_name, avatar_url } = data
+      sendResponse({ followers, followings, unfollowers, fans, insta_name, avatar_url})
     })
     .catch(error => {
       console.error('Error in userFollowing:', error)
@@ -20,10 +20,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 })
 
 async function userFollowing(username) {
-  let followers = [{ username: "", insta_name: "" }]
-  let followings = [{ username: "", insta_name: "" }]
-  let unfollowers = [{ username: "", insta_name: "" }]
-  let fans = [{ username: "", insta_name: "" }]
+  let followers = [{ username: "", insta_name: "", avatar_url: ""}]
+  let followings = [{ username: "", insta_name: "", avatar_url: ""}]
+  let unfollowers = [{ username: "", insta_name: "", avatar_url: ""}]
+  let fans = [{ username: "", insta_name: "", avatar_url: ""}]
 
   followers = []
   followings = []
@@ -36,10 +36,15 @@ async function userFollowing(username) {
     )
 
     let userId
+    let insta_name
+    let avatar_url
+
     const userQueryJson = await userQueryRes.json()
     for (let foundUser of userQueryJson.users) {
       if (foundUser.user.username === username) {
         userId = foundUser.user.pk
+        insta_name = foundUser.user.full_name
+        avatar_url = foundUser.user.profile_pic_url
       }
     }
 
@@ -119,7 +124,7 @@ async function userFollowing(username) {
       )
     })
 
-    return { followers, followings, unfollowers, fans }
+    return { followers, followings, unfollowers, fans, insta_name, avatar_url}
   } catch (err) {
     console.log({ err });
     return { err }

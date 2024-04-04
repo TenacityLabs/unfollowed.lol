@@ -18,31 +18,12 @@ def receiveData(request):
     data = json.loads(request.body)
     username = data.get('username')
     insta_name = data.get('insta_name')
-    user, created = User.objects.get_or_create(username=username)
+    avatar_url = data.get('avatar_url')
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        user = User.objects.create()
 
-<<<<<<< HEAD
-    for field in ['followers', 'followings', 'unfollowers', 'fans']:
-        related_users = data.get(field, [])
-        for related_user_data in related_users:
-            related_user, _ = User.objects.get_or_create(
-                username=related_user_data['username'],
-                defaults={'insta_name': related_user_data.get('insta_name', '')}
-            )
-            
-            if field == 'followers':
-                user.followers.add(related_user)
-            elif field == 'followings':
-                user.following.add(related_user)
-            elif field == 'unfollowers':
-                user.unfollowers.add(related_user)
-            elif field == 'fans':
-                user.fans.add(related_user)
-                
-    user.isProcessed = True
-    user.save()
-
-    return Response({'status': 'success'})
-=======
     with transaction.atomic():
         user_data = {field: data.get(field, []) for field in ['followers', 'followings', 'unfollowers', 'fans']}
         followers = user_data['followers']
@@ -50,29 +31,28 @@ def receiveData(request):
         unfollowers = user_data['unfollowers']
         fans = user_data['fans']
 
-    if user.isProcessed:
-        # Check for changes in followers
-        old_followers = [(follower['username'], follower['insta_name']) for follower in user.followers]
+    if user.username:
+        old_followers = [(follower['username'], follower['insta_name'], follower['avatar_url']) for follower in user.followers]
         old_usernames = {tup[0] for tup in old_followers}
-        current_followers = [(follower['username'], follower['insta_name']) for follower in followers]
+        current_followers = [(follower['username'], follower['insta_name'], follower['avatar_url']) for follower in followers]
         current_usernames = {tup[0] for tup in current_followers}
 
         for follower in (old_usernames - current_usernames):
-            follower_name = next(value for key, value in old_followers if key == follower)
-            Transaction.objects.create(from_user = {'username': follower, 'insta_name': follower_name}, to_user = user, action = 'Unfollowed').save()
+            follower_tuple = next(tup for tup in old_followers if tup[0] == follower)
+            Transaction.objects.create(from_user = {'username': follower, 'insta_name': follower_tuple[1], 'avatar_url': follower_tuple[2]}, to_user = user, action = 'Unfollowed').save()
 
         for follower in (current_usernames - old_usernames):
-            follower_name = next(value for key, value in current_followers if key == follower)
-            Transaction.objects.create(from_user = {'username': follower, 'insta_name': follower_name}, to_user = user, action = 'Followed').save()
+            follower_tuple = next(tup for tup in current_followers if tup[0] == follower)
+            Transaction.objects.create(from_user = {'username': follower, 'insta_name': follower_tuple[1], 'avatar_url': follower_tuple[2]}, to_user = user, action = 'Followed').save()
 
-    elif not user.isProcessed:
-        user.isProcessed = True
+    user.username = username
+    user.insta_name = insta_name
+    user.avatar_url = avatar_url
 
     user.followers, user.following, user.unfollowers, user.fans = followers, following, unfollowers, fans
     user.save()
 
     return JsonResponse({'status': 'success'})
->>>>>>> 61d5ed5c2d122c0b9aebc56d2ba73f3e7398c3a3
 
 @api_view(['GET'])
 def userProfile(request, username):
@@ -81,8 +61,51 @@ def userProfile(request, username):
         user = User.objects.get(username=username)
     except User.DoesNotExist:
         return JsonResponse({'error': 'User not found'}, status=404)
+    
+    day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
+    week_ago = datetime.datetime.now() - datetime.timedelta(weeks=1)
+    last_day = Transaction.objects.filter(to_user=user, timestamp__gte=day_ago).order_by('-timestamp')
+    last_week = (Transaction.objects.filter(to_user=user, timestamp__gte=week_ago)).order_by('-timestamp')
+    last_month = Transaction.objects.filter(to_user=user, timestamp__gte=week_ago).order_by('-timestamp')
+    f_today = len(last_day.filter(action='Followed'))
+    u_today = len(last_day.filter(action='Unfollowed'))
+    f_week = len(last_week.filter(action='Followed'))
+    u_week = len(last_week.filter(action='Unfollowed'))
+    f_month = len(last_month.filter(action='Followed'))
+    u_month = len(last_month.filter(action='Unfollowed')) 
 
-    return JsonResponse(UserProfileSerializer(user).data)
+
+    response = {
+        'general': {
+            'username': user.username,  # Instagram username
+            'insta_name': user.insta_name, # Instagram "Full Name"
+            'avatar_url': user.avatar_url, # Profile picture URL
+            'last_updated': user.last_updated, # Last updated time
+            'follower_count': len(user.followers), # Number of followers
+            'following_count': len(user.following), # Number of following
+            'fan_count': len(user.fans), # Number of fans
+            'unfollower_count': len(user.unfollowers), # Number of unfollowers
+        },
+        'transactions': {
+            'num_followers_today': f_today, # Number of followers today
+            'num_unfollowers_today': u_today, # Number of unfollowers today
+            'num_followers_week': f_week, # etc...
+            'num_unfollowers_week': u_week,
+            'num_followers_month': f_month,
+            'num_unfollowers_month': u_month,
+            'followers_today': TransactionSerializer(last_day.filter(action='Followed'), many=True).data, # Ordered list of followers today
+            'unfollowers_today': TransactionSerializer(last_day.filter(action='Unfollowed'), many=True).data, # Ordered list of unfollowers today
+            'followers_week': TransactionSerializer(last_week.filter(action='Followed'), many=True).data, # etc...
+            'unfollowers_week': TransactionSerializer(last_week.filter(action='Unfollowed'), many=True).data,
+            'followers_month': TransactionSerializer(last_month.filter(action='Followed'), many=True).data,
+            'unfollowers_month': TransactionSerializer(last_month.filter(action='Unfollowed'), many=True).data
+        },
+        'followers': user.followers, # List of followers
+        'following': user.following, # List of following
+        'fans': user.fans, # List of fans
+        'unfollowers': user.unfollowers # List of unfollowers
+    }
+    return JsonResponse(response)
 
 @api_view(['GET'])
 def getRecentTransactions(request, username):
@@ -100,7 +123,7 @@ def getRecentTransactions(request, username):
         'today': TransactionSerializer(last_day[:3], many=True).data,
         'total_today': last_day.count(),
         'this_week': TransactionSerializer(last_week[:3], many=True).data,
-        'total_this_week': last_week.count() # doesn't include today (last 24 hrs)
+        'total_this_week': last_week.count()
     })
 
 @api_view(['GET'])
