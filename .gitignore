@@ -1,5 +1,5 @@
 .history
 venv
 *.pyc
-__pycache__/
+server/server/__pycache__/
 .env
