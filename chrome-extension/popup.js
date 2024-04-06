@@ -74,7 +74,8 @@ document.addEventListener('DOMContentLoaded', function () {
               window.open(`https://www.unfollowed.lol/user/${username}/`, '_blank');
             });
 
-            if (!postData.private_error) {
+            // fixme
+            if (!postData.private_error || true) {
               localStorage.setItem('lastProcessed', Date.now())
               localStorage.setItem('username', username)
               localStorage.setItem('insta_name', postData.insta_name)
@@ -189,6 +190,15 @@ document.addEventListener('DOMContentLoaded', function () {
       const total_this_week = JSON.parse(localStorage.getItem('total_this_week'))
       const total_today = JSON.parse(localStorage.getItem('total_today'))
 
+      const link = document.createElement('button')
+      console.log(link)
+      link.innerHTML = 'View full analysis'
+      link.setAttribute('class', 'profile-link')
+      link.setAttribute('id', 'profile-link')
+      link.addEventListener('click', function () {
+        window.open(`https://www.unfollowed.lol/user/${username}/`, '_blank');
+      });
+
       if (total_this_week == 0 || total_today == 0) {
         document.getElementById('unfollowers').innerHTML = (Math.round(unfollowers.length / followings.length * 100) || 0) + '%'
         document.getElementById('fans').innerHTML = (Math.round(fans.length / followers.length * 100) || 0) + '%'
@@ -220,6 +230,11 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('profile').className = 'profile'
       }
     }
+
+    document.body.className = 'profile-body'
+    document.getElementById('nouser').className = 'hidden'
+    document.getElementById('profile').appendChild(link)
+    document.getElementById('profile').className = 'profile'
   });
 })
 
