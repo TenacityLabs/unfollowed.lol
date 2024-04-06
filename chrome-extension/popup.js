@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             return response.json();
           }).then(data => {
+            console.log(data)
             const link = document.createElement('button')
             link.innerHTML = 'View full analysis'
             link.setAttribute('class', 'profile-link')
@@ -76,20 +77,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // fixme
             if (!postData.private_error || true) {
+              
               localStorage.setItem('lastProcessed', Date.now())
               localStorage.setItem('username', username)
               localStorage.setItem('insta_name', postData.insta_name)
               localStorage.setItem('avatar_url', postData.avatar_url)
 
-              localStorage.setItem('followers', postData.followers)
-              localStorage.setItem('followings', postData.followings)
-              localStorage.setItem('unfollowers', postData.unfollowers)
-              localStorage.setItem('fans', postData.fans)
+              localStorage.setItem('followers', JSON.stringify(postData.followers))
+              localStorage.setItem('followings', JSON.stringify(postData.followings))
+              localStorage.setItem('unfollowers', JSON.stringify(postData.unfollowers))
+              localStorage.setItem('fans', JSON.stringify(postData.fans))
 
-              localStorage.setItem('this_week', data.this_week)
-              localStorage.setItem('today', data.today)
-              localStorage.setItem('total_this_week', data.total_this_week)
-              localStorage.setItem('total_today', postData.total_today)
+              localStorage.setItem('this_week', JSON.stringify(postData.this_week))
+              localStorage.setItem('today', JSON.stringify(postData.today))
+              localStorage.setItem('total_this_week', JSON.stringify(postData.total_this_week))
+              localStorage.setItem('total_today', JSON.stringify(postData.total_today))
             }
 
             if (data.total_this_week == 0 || data.total_today == 0) {
@@ -200,6 +202,7 @@ document.addEventListener('DOMContentLoaded', function () {
       });
 
       if (total_this_week == 0 || total_today == 0) {
+        console.log('no data')
         document.getElementById('unfollowers').innerHTML = (Math.round(unfollowers.length / followings.length * 100) || 0) + '%'
         document.getElementById('fans').innerHTML = (Math.round(fans.length / followers.length * 100) || 0) + '%'
         document.getElementById('nodata-profile').appendChild(link)
@@ -229,12 +232,13 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('profile').appendChild(link)
         document.getElementById('profile').className = 'profile'
       }
+      document.body.className = 'profile-body'
+      document.getElementById('nouser').className = 'hidden'
+      document.getElementById('profile').appendChild(link)
+      document.getElementById('profile').className = 'profile'
     }
 
-    document.body.className = 'profile-body'
-    document.getElementById('nouser').className = 'hidden'
-    document.getElementById('profile').appendChild(link)
-    document.getElementById('profile').className = 'profile'
+    
   });
 })
 
