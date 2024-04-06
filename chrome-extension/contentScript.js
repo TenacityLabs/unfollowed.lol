@@ -40,6 +40,10 @@ function handleButtonClick(event) {
         button.style.display = 'none'
         alert('This user is private and you are not following them. Please follow them to get analytics.')
         return
+      } else if (postData.famous) {
+        button.style.display = 'none'
+        alert('This user is too famous for us to process. Please try a different user.')
+        return
       }
 
       const apiUrl = 'http://127.0.0.1:8000/receive';
