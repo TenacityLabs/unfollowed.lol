@@ -36,6 +36,11 @@ function handleButtonClick(event) {
     try {
       // TODO: Update this to put into .env or remember to switch during production
       // TODO: Use django api
+      if (postData.private_error) {
+        button.style.display = 'none'
+        alert('This user is private and you are not following them. Please follow them to get analytics.')
+        return
+      }
 
       const apiUrl = 'http://127.0.0.1:8000/receive';
       const fetchResponse = await fetch(apiUrl, {
@@ -58,7 +63,7 @@ function handleButtonClick(event) {
       console.log('Response from Django API:', data);
     } catch (error) {
       button.textContent = 'Process User'
-      alert(`Error fetching: ${username}`)
+      button.disabled = false
       console.error('Error posting data to Django:', error);
     }
   });

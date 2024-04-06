@@ -8,8 +8,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   userFollowing(username)
     .then(data => {
-      const { followers, followings, unfollowers, fans, insta_name, avatar_url } = data
-      sendResponse({ followers, followings, unfollowers, fans, insta_name, avatar_url})
+      const { followers, followings, unfollowers, fans, insta_name, avatar_url, private_error } = data
+      sendResponse({ followers, followings, unfollowers, fans, insta_name, avatar_url, private_error})
     })
     .catch(error => {
       console.error('Error in userFollowing:', error)
@@ -38,10 +38,14 @@ async function userFollowing(username) {
     let userId
     let insta_name
     let avatar_url
+    let private_error = false
 
     const userQueryJson = await userQueryRes.json()
     for (let foundUser of userQueryJson.users) {
       if (foundUser.user.username === username) {
+        if (foundUser.user.is_private && !foundUser.user.friendship_status.following) {
+          private_error = true
+        }
         userId = foundUser.user.pk
         insta_name = foundUser.user.full_name
         avatar_url = foundUser.user.profile_pic_url
@@ -124,7 +128,7 @@ async function userFollowing(username) {
       )
     })
 
-    return { followers, followings, unfollowers, fans, insta_name, avatar_url}
+    return { followers, followings, unfollowers, fans, insta_name, avatar_url, private_error}
   } catch (err) {
     console.log({ err });
     return { err }

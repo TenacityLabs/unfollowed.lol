@@ -16,6 +16,10 @@ document.addEventListener('DOMContentLoaded', function () {
         username = name;
       }).catch(error => {
         console.error('Error fetching username:', error);
+        document.getElementById('loading').className = 'hidden'
+        document.getElementById('center-text').innerHTML = 'Error fetching username :('
+        document.getElementById('center-text-signin').className = 'center-text'
+
       });
 
       // Send the username to the background script
@@ -100,7 +104,6 @@ document.addEventListener('DOMContentLoaded', function () {
           });
 
         } catch (error) {
-          alert(`Error fetching: ${username}`)
           console.error('Error posting data to Django:', error);
         }
       });
