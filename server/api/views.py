@@ -93,7 +93,7 @@ def userProfile(request, username):
             'net_followers_today': f_today - u_today, # Net followers today
             'num_followers_week': f_week, # etc...
             'num_unfollowers_week': u_week,
-            'net_followers_week': f_week - u_week,
+            'total_transactions_week': f_week + u_week,
             'num_followers_month': f_month,
             'num_unfollowers_month': u_month,
             'net_followers_month': f_month - u_month,
