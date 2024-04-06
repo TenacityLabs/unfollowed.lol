@@ -29,7 +29,9 @@ SECRET_KEY = 'django-insecure-9bz$g+gpe^(&q2(9h-w*mebi573yhg!0qo$sn%9$%8=5v)p!f6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "http://api.unfollowed.lol:8000/"
+]
 
 
 # Application definition
