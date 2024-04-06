@@ -6,4 +6,3 @@ psycopg2-binary==2.9.9
 python-dotenv==1.0.1
 pytz==2023.3.post1
 sqlparse==0.4.4
-humanize==4.9.0
