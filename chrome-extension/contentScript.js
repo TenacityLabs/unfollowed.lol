@@ -10,12 +10,35 @@ style.innerHTML = `
 }
 `;
 document.head.appendChild(style);
+let my_username;
+document.addEventListener('DOMContentLoaded', function () {
+  chrome.scripting.executeScript({
+    target: { tabId: currentTab.id },
+    function: async () => {
+      const profileElements = document.querySelectorAll('.x1i10hfl.xjbqb8w.x1ejq31n.xd10rxx.x1sy0etr.x17r0tee.x972fbf.xcfux6l.x1qhh985.xm0m39n.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz._a6hd');
+      for (const element of profileElements) {
+        if (element.href && element.textContent.trim() === 'Profile') {
+          const username = element.href.match(/https:\/\/www\.instagram\.com\/([^\/]+)\//)[1]
+          return username
+        }
+      }
+      return { err: 'Username not found' }
+    }
+  }, (res) => {
+    if (res[0].result.err) {
+      alert('An error as occured, please try again')
+      return
+    }
+    my_username = res[0].result
+  });
+});
 
 function handleButtonClick(event) {
   event.stopPropagation();
 
   const username = event.target.getAttribute('data-username');
   const buttons = document.getElementsByClassName('custom-ig-button')
+  const self = username === my_username
   if (buttons.length !== 1) {
     alert('Unexpected error, cannot find processing user button')
     return
@@ -29,7 +52,7 @@ function handleButtonClick(event) {
   button.textContent = 'Processing...'
 
   // Send the username to the background script
-  chrome.runtime.sendMessage({ username: username }, async response => {
+  chrome.runtime.sendMessage({ username: username, self: self }, async response => {
     const postData = { ...response, username: username };
     console.log(postData)
 

@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
       });
 
       // Send the username to the background script
-      chrome.runtime.sendMessage({ username: username }, async response => {
+      chrome.runtime.sendMessage({ username: username, self: true }, async response => {
         const postData = { ...response, username: username };
         console.log(postData)
 

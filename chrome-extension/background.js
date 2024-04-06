@@ -4,9 +4,9 @@
 
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  const { username } = request
+  const { username, self } = request
 
-  userFollowing(username)
+  userFollowing(username, self)
     .then(data => {
       const { followers, followings, unfollowers, fans, insta_name, avatar_url, private_error, famous } = data
       sendResponse({ followers, followings, unfollowers, fans, insta_name, avatar_url, private_error, famous})
@@ -19,7 +19,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   return true
 })
 
-async function userFollowing(username) {
+async function userFollowing(username, self) {
   let followers = [{ username: "", insta_name: "", avatar_url: ""}]
   let followings = [{ username: "", insta_name: "", avatar_url: ""}]
   let unfollowers = [{ username: "", insta_name: "", avatar_url: ""}]
@@ -43,7 +43,7 @@ async function userFollowing(username) {
     const userQueryJson = await userQueryRes.json()
     for (let foundUser of userQueryJson.users) {
       if (foundUser.user.username === username) {
-        if (foundUser.user.is_private && !foundUser.user.friendship_status.following) {
+        if (foundUser.user.is_private && !foundUser.user.friendship_status.following && !self) {
           private_error = true
         }
         userId = foundUser.user.pk
@@ -144,5 +144,4 @@ async function userFollowing(username) {
     console.log({ err });
     return { err }
   }
-
 }
