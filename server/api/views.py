@@ -6,6 +6,8 @@ from server.models import User, Transaction
 from django.http import JsonResponse
 import json
 from django.db import transaction
+import humanize
+from django.utils import timezone
 
 @api_view(['GET'])
 def getData(request):
@@ -74,7 +76,6 @@ def userProfile(request, username):
     f_month = len(last_month.filter(action='Followed'))
     u_month = len(last_month.filter(action='Unfollowed')) 
 
-
     response = {
         'general': {
             'username': user.username,  # Instagram username
@@ -89,10 +90,14 @@ def userProfile(request, username):
         'transactions': {
             'num_followers_today': f_today, # Number of followers today
             'num_unfollowers_today': u_today, # Number of unfollowers today
+            'net_followers_today': f_today - u_today, # Net followers today
             'num_followers_week': f_week, # etc...
             'num_unfollowers_week': u_week,
+            'total_transactions_week': f_week + u_week,
             'num_followers_month': f_month,
             'num_unfollowers_month': u_month,
+            'net_followers_month': f_month - u_month,
+            'last_follower': TransactionSerializer(last_day.filter(action='Followed').first()).data, # Last follower
             'followers_today': TransactionSerializer(last_day.filter(action='Followed'), many=True).data, # Ordered list of followers today
             'unfollowers_today': TransactionSerializer(last_day.filter(action='Unfollowed'), many=True).data, # Ordered list of unfollowers today
             'followers_week': TransactionSerializer(last_week.filter(action='Followed'), many=True).data, # etc...
