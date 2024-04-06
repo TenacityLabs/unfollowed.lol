@@ -8,8 +8,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   userFollowing(username)
     .then(data => {
-      const { followers, followings, unfollowers, fans, insta_name, avatar_url, private_error } = data
-      sendResponse({ followers, followings, unfollowers, fans, insta_name, avatar_url, private_error})
+      const { followers, followings, unfollowers, fans, insta_name, avatar_url, private_error, famous } = data
+      sendResponse({ followers, followings, unfollowers, fans, insta_name, avatar_url, private_error, famous})
     })
     .catch(error => {
       console.error('Error in userFollowing:', error)
@@ -54,6 +54,7 @@ async function userFollowing(username) {
 
     let after = null
     let has_next = true
+    let famous = false
 
     while (has_next) {
       await fetch(
@@ -71,6 +72,11 @@ async function userFollowing(username) {
         .then((res) => res.json())
         .then((res) => {
           has_next = res.data.user.edge_followed_by.page_info.has_next_page
+          if (res.data.user.edge_followed_by.count > 4999) {
+            famous = true;
+            has_next = false;
+            return
+          }
           after = res.data.user.edge_followed_by.page_info.end_cursor
           followers = followers.concat(
             res.data.user.edge_followed_by.edges.map(({ node }) => {
@@ -103,6 +109,11 @@ async function userFollowing(username) {
         .then((res) => res.json())
         .then((res) => {
           has_next = res.data.user.edge_follow.page_info.has_next_page;
+          if (res.data.user.edge_follow.count > 4999) {
+            famous = true;
+            has_next = false;
+            return
+          }
           after = res.data.user.edge_follow.page_info.end_cursor;
           followings = followings.concat(
             res.data.user.edge_follow.edges.map(({ node }) => {
@@ -128,7 +139,7 @@ async function userFollowing(username) {
       )
     })
 
-    return { followers, followings, unfollowers, fans, insta_name, avatar_url, private_error}
+    return { followers, followings, unfollowers, fans, insta_name, avatar_url, private_error, famous}
   } catch (err) {
     console.log({ err });
     return { err }

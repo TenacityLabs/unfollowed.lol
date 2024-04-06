@@ -18,8 +18,8 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('Error fetching username:', error);
         document.getElementById('loading').className = 'hidden'
         document.getElementById('center-text').innerHTML = 'Error fetching username :('
-        document.getElementById('center-text-signin').className = 'center-text'
-
+        document.getElementById('center-text-error').className = 'center-text'
+        document.getElementById('center-text-error').innerHTML = 'Sign in and refresh the extension to get started!'
       });
 
       // Send the username to the background script
@@ -30,6 +30,13 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
           // TODO: Update this to put into .env or remember to switch during production
           // TODO: Use django api
+          if (postData.famous) {
+            document.getElementById('loading').className = 'hidden'
+            document.getElementById('center-text').innerHTML = 'Wow! This user is too famous for us to process'
+            document.getElementById('center-text-error').className = 'center-text'
+            document.getElementById('center-text-error').innerHTML = 'unfollowed.lol can only make a limited number of queries, sorry!'
+            throw new Error('This user is too famous for us to process. Please try a different user.');
+          }
 
           const apiUrl = 'http://127.0.0.1:8000/receive';
           const fetchResponse = await fetch(apiUrl, {
