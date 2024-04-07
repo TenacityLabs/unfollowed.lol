@@ -3,3 +3,7 @@ venv
 *.pyc
 server/server/__pycache__/
 .env
+
+private.key
+ca_bundle.crt
+certificate.crt
