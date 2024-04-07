@@ -30,7 +30,10 @@ SECRET_KEY = 'django-insecure-9bz$g+gpe^(&q2(9h-w*mebi573yhg!0qo$sn%9$%8=5v)p!f6
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "http://api.unfollowed.lol:8000/"
+    "api.unfollowed.lol",
+    "api.unfollowed.lol:8000",
+    "140.238.155.227",
+    "140.238.155.227:8000"
 ]
 
 
