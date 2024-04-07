@@ -69,7 +69,7 @@ function handleButtonClick(event) {
         return
       }
 
-      const apiUrl = 'http://127.0.0.1:8000/receive';
+      const apiUrl = 'http://api.unfollowed.lol:8000/receive';
       const fetchResponse = await fetch(apiUrl, {
         method: 'POST',
         headers: {
