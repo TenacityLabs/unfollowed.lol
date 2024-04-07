@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
-function handleButtonClick(event) {
+function handleButtonClick(event,my_username) {
   event.stopPropagation();
 
   const username = event.target.getAttribute('data-username');
@@ -126,7 +126,9 @@ function injectButtonsAndListeners() {
     const button = document.createElement('button');
     button.textContent = 'Process User';
     button.setAttribute('data-username', username); // Store the username in the button
-    button.addEventListener('click', handleButtonClick); // Add click event listener
+    button.addEventListener('click', function(event) {
+      handleButtonClick(event, username);
+    }); // Add click event listener
     button.classList.add('custom-ig-button'); // Add a class to identify buttons added by your extension
     button.classList.add('gradient-border');
 
