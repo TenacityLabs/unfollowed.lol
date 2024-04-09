@@ -1,7 +1,7 @@
 .history
 venv
 *.pyc
-server/server/__pycache__/
+__pycache__
 .env
 
 private.key
