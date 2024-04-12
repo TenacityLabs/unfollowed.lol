@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
             throw new Error('This user is too famous for us to process. Please try a different user.');
           }
 
-          const apiUrl = 'http://127.0.0.1:8000/receive';
+          const apiUrl = 'https://api.unfollowed.lol:8000/receive';
           const fetchResponse = await fetch(apiUrl, {
             method: 'POST',
             headers: {
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
           console.log('Response from Django API:', data);
 
-          fetch(`http://127.0.0.1:8000/transactions/${username}/`, {
+          fetch(`https://api.unfollowed.lol:8000/transactions/${username}/`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
