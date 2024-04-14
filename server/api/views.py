@@ -103,8 +103,8 @@ def userProfile(request, username):
             'unfollowers_today': TransactionSerializer(last_day.filter(action='Unfollowed'), many=True).data, # Ordered list of unfollowers today
             'followers_week': TransactionSerializer(last_week.filter(action='Followed'), many=True).data, # etc...
             'unfollowers_week': TransactionSerializer(last_week.filter(action='Unfollowed'), many=True).data,
-            'followers_month': TransactionSerializer(last_month.filter(action='Followed'), many=True).data,
-            'unfollowers_month': TransactionSerializer(last_month.filter(action='Unfollowed'), many=True).data
+            'followers_all': TransactionSerializer(Transaction.objects.filter(to_user=user, action='Followed').order_by('-timestamp'), many=True).data, 
+            'unfollowers_all': TransactionSerializer(Transaction.objects.filter(to_user=user, action='Unfollowed').order_by('-timestamp'), many=True).data
         },
         'followers': user.followers, # List of followers
         'following': user.following, # List of following
