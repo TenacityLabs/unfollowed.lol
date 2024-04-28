@@ -1,6 +1,11 @@
-// chrome.runtime.onInstalled.addListener(() => {
-//   console.log('hello world')
-// })
+
+chrome.runtime.onInstalled.addListener(function() {
+  chrome.tabs.create({
+    url: 'https://randomthinghere.notion.site/unfollowed-lol-c02a5cfa6b544585b201d40160c08367',
+    active: true
+  });
+  return false;
+});
 
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
