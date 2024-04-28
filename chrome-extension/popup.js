@@ -169,9 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
       document.getElementById('analysis').className = 'hidden'
       document.getElementById('loading').className = 'hidden'
     }
-
-    console.log('lastProcessed', localStorage.getItem('lastProcessed'))
-    console.log(Date.now() - 1000 * 60 * 10)                                                                           // FIXME
+                                                                     // FIXME
     if (localStorage.getItem('lastProcessed') && localStorage.getItem('lastProcessed') > Date.now() - 1000 * 60 * 10 && false) {
       document.getElementById('goto').className = 'hidden'
       document.getElementById('analysis').className = 'hidden'

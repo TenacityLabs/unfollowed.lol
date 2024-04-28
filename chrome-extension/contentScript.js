@@ -67,6 +67,10 @@ function handleButtonClick(event,my_username) {
         button.style.display = 'none'
         alert('This user is too famous for us to process. Please try a different user.')
         return
+      } else if (postData.username == '' || postData.username == null) {
+        button.style.display = 'none'
+        alert('Sorry, an unknown error occurred, please refresh and try again.')
+        return
       }
 
       const apiUrl = 'https://api.unfollowed.lol:8000/receive';
