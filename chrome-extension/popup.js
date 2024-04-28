@@ -36,6 +36,11 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('center-text-error').className = 'center-text'
             document.getElementById('center-text-error').innerHTML = 'unfollowed.lol can only make a limited number of queries, sorry!'
             throw new Error('This user is too famous for us to process. Please try a different user.');
+          } else if (postData.err) {
+            document.getElementById('loading').className = 'hidden'
+            document.getElementById('center-text').innerHTML = 'Error fetching username :('
+            document.getElementById('center-text-error').className = 'center-text'
+            document.getElementById('center-text-error').innerHTML = 'Sign in and refresh the extension to get started!'
           }
 
           const apiUrl = 'https://api.unfollowed.lol:8000/receive';

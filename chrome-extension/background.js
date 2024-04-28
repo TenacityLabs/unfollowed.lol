@@ -8,8 +8,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   userFollowing(username, self)
     .then(data => {
-      const { followers, followings, unfollowers, fans, insta_name, avatar_url, private_error, famous } = data
-      sendResponse({ followers, followings, unfollowers, fans, insta_name, avatar_url, private_error, famous})
+      const { followers, followings, unfollowers, fans, insta_name, avatar_url, private_error, famous, err } = data
+      sendResponse({ followers, followings, unfollowers, fans, insta_name, avatar_url, private_error, famous, err })
     })
     .catch(error => {
       console.error('Error in userFollowing:', error)
