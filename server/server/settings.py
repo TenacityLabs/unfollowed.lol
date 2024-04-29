@@ -40,7 +40,7 @@ ALLOWED_HOSTS = [
     "132.145.108.66:8000"
 ]
 
-
+DATA_UPLOAD_MAX_MEMORY_SIZE = None
 # Application definition
 
 INSTALLED_APPS = [
