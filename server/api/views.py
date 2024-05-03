@@ -18,9 +18,12 @@ def getData(request):
 def receiveData(request):
     
     data = json.loads(request.body)
-    username = data.get('username')
+    username = data.get('username').strip()
     insta_name = data.get('insta_name')
     avatar_url = data.get('avatar_url')
+
+    if not username:
+        return JsonResponse({'error': 'Username is required'}, status=400)
     try:
         user = User.objects.get(username=username)
     except User.DoesNotExist:
