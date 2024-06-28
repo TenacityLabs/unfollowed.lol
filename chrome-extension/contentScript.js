@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
-function handleButtonClick(event,my_username) {
+function handleButtonClick(event, my_username) {
   event.stopPropagation();
 
   const username = event.target.getAttribute('data-username');
@@ -57,8 +57,6 @@ function handleButtonClick(event,my_username) {
     console.log(postData)
 
     try {
-      // TODO: Update this to put into .env or remember to switch during production
-      // TODO: Use django api
       if (postData.private_error) {
         button.style.display = 'none'
         alert('This user is private and you are not following them. Please follow them to get analytics.')
@@ -90,7 +88,7 @@ function handleButtonClick(event,my_username) {
 
       button.textContent = 'View Analytics'
       button.disabled = false
-      
+
       console.log('Response from Django API:', data);
     } catch (error) {
       button.textContent = 'Process User'
@@ -110,18 +108,17 @@ function injectButtonsAndListeners() {
     return
   }
 
-
   // Find all <h2> elements (usernames) and inject buttons
   const sectionElements = document.querySelectorAll('section')
   const settingsElements = Array.from(sectionElements).filter(section => !section.querySelector('main'))
   if (settingsElements.length === 0) {
     return
   }
-  let profileElement = settingsElements[0]
+  let profileElement = settingsElements[1]
   while (profileElement.firstElementChild) {
     profileElement = profileElement.firstElementChild
   }
-  if (profileElement.tagName !== 'H2' && profileElement.tagName !== 'H1') {
+  if (profileElement.tagName !== 'SPAN') {
     return
   }
   const username = profileElement.textContent.trim()
@@ -130,7 +127,7 @@ function injectButtonsAndListeners() {
     const button = document.createElement('button');
     button.textContent = 'Process User';
     button.setAttribute('data-username', username); // Store the username in the button
-    button.addEventListener('click', function(event) {
+    button.addEventListener('click', function (event) {
       handleButtonClick(event, username);
     }); // Add click event listener
     button.classList.add('custom-ig-button'); // Add a class to identify buttons added by your extension
