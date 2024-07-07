@@ -10,9 +10,6 @@ from django.db import transaction
 import humanize
 from django.utils import timezone
 
-from server.server import settings
-
-
 
 @api_view(['GET'])
 def getData(request):
