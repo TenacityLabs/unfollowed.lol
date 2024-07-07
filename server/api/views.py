@@ -1,6 +1,5 @@
 import datetime
 
-from fastapi.responses import FileResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from server.serializers import TransactionSerializer, UserProfileSerializer, UserSerializer
@@ -14,9 +13,6 @@ from django.utils import timezone
 from server.server import settings
 
 
-def serve_verification_file(request):
-    file_path = os.path.join(settings.BASE_DIR, '.well-known', 'pki-validation', 'B45539896C49210367274D3AD1C60BD5.txt')
-    return FileResponse(open(file_path, 'rb'))
 
 @api_view(['GET'])
 def getData(request):
