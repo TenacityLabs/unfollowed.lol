@@ -1,6 +1,6 @@
 {
-  "name": "Unfollowed.lol - Instagram Unfollower Tracker",
-  "version": "1.0.0",
+  "name": "Unfollowed.lol - Instagram Follower & Unfollower Tracker",
+  "version": "1.0.5",
   "author": "Edison Qu, Lucas Shen, Andrew Durnford",
   "description": "Track your following on Instagram as well as your friend's following to see who unfollowed you.",
   "permissions": [
@@ -11,8 +11,7 @@
   ],
   "host_permissions": [
     "https://*.instagram.com/*",
-    "https://*.unfollowed.lol/*",
-    "http://127.0.0.1:8000/*"
+    "https://*.unfollowed.lol/*"
   ],
   "background": {
     "service_worker": "background.js"

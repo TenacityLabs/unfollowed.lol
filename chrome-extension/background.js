@@ -1,7 +1,7 @@
 
 chrome.runtime.onInstalled.addListener(function() {
   chrome.tabs.create({
-    url: 'https://randomthinghere.notion.site/unfollowed-lol-c02a5cfa6b544585b201d40160c08367',
+    url: 'https://unfollowed.lol/setup',
     active: true
   });
   return false;
