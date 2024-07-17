@@ -23,6 +23,7 @@ def receiveData(request):
     username = data.get('username').strip()
     insta_name = data.get('insta_name')
     avatar_url = data.get('avatar_url')
+    print(f'Received from user {username}, {insta_name}')
 
     if not username:
         return JsonResponse({'error': 'Username is required'}, status=400)
@@ -37,6 +38,9 @@ def receiveData(request):
         following = user_data['followings']
         unfollowers = user_data['unfollowers']
         fans = user_data['fans']
+
+        print(f'Processing {username}, {insta_name} with {len(followers)} followers and {len(following)} followings')
+
 
     if user.username:
         old_followers = [(follower['username'], follower['insta_name'], follower['avatar_url']) for follower in user.followers]
