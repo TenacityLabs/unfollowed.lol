@@ -16,21 +16,21 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ['username', 'insta_name', 'followers', 'following', 'fans', 'unfollowers']
 
 
-class TransactionSerializer(serializers.ModelSerializer):
-    to_user = UserSerializer()
+# class TransactionSerializer(serializers.ModelSerializer):
+#     to_user = UserSerializer()
 
-    class Meta:
-        model = Transaction
-        fields = '__all__'
+#     class Meta:
+#         model = Transaction
+#         fields = '__all__'
 
-    def to_representation(self, instance):
-        ret = super().to_representation(instance)
-        timestamp = instance.timestamp
+#     def to_representation(self, instance):
+#         ret = super().to_representation(instance)
+#         timestamp = instance.timestamp
         
-        # Assuming 'timestamp' is a datetime object and using Django's timezone support
-        now = timezone.now()
-        if timestamp:
-            delta = now - timestamp
-            human_readable = humanize.naturaltime(delta)
-            ret['timestamp'] = human_readable
-        return ret
+#         # Assuming 'timestamp' is a datetime object and using Django's timezone support
+#         now = timezone.now()
+#         if timestamp:
+#             delta = now - timestamp
+#             human_readable = humanize.naturaltime(delta)
+#             ret['timestamp'] = human_readable
+#         return ret
