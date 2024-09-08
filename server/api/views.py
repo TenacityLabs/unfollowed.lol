@@ -23,6 +23,7 @@ def receiveData(request):
     username = data.get('username').strip()
     insta_name = data.get('insta_name')
     avatar_url = data.get('avatar_url')
+    new = False
     print(f'Received from user {username}, {insta_name}')
 
     if not username:
@@ -30,6 +31,7 @@ def receiveData(request):
     try:
         user = User.objects.get(username=username)
     except User.DoesNotExist:
+        new = True
         user = User.objects.create()
 
     with transaction.atomic():
@@ -48,19 +50,27 @@ def receiveData(request):
         current_followers = [(follower['username'], follower['insta_name'], follower['avatar_url']) for follower in followers]
         current_usernames = {tup[0] for tup in current_followers}
 
-        for follower in (old_usernames - current_usernames):
-            follower_tuple = next(tup for tup in old_followers if tup[0] == follower)
-            Transaction.objects.create(from_user = {'username': follower, 'insta_name': follower_tuple[1], 'avatar_url': follower_tuple[2]}, to_user = user, action = 'Unfollowed').save()
+        unfollows = [(follower['username'], follower['insta_name'], follower['avatar_url']) for follower in (old_usernames - current_usernames)]
+        follows = [(follower['username'], follower['insta_name'], follower['avatar_url']) for follower in (current_usernames - old_usernames)]
 
-        for follower in (current_usernames - old_usernames):
-            follower_tuple = next(tup for tup in current_followers if tup[0] == follower)
-            Transaction.objects.create(from_user = {'username': follower, 'insta_name': follower_tuple[1], 'avatar_url': follower_tuple[2]}, to_user = user, action = 'Followed').save()
+        # for follower in (old_usernames - current_usernames):
+        #     follower_tuple = next(tup for tup in old_followers if tup[0] == follower)
+        #     Transaction.objects.create(from_user = {'username': follower, 'insta_name': follower_tuple[1], 'avatar_url': follower_tuple[2]}, to_user = user, action = 'Unfollowed').save()
+
+        # for follower in (current_usernames - old_usernames):
+        #     follower_tuple = next(tup for tup in current_followers if tup[0] == follower)
+        #     Transaction.objects.create(from_user = {'username': follower, 'insta_name': follower_tuple[1], 'avatar_url': follower_tuple[2]}, to_user = user, action = 'Followed').save()
 
     user.username = username
     user.insta_name = insta_name
     user.avatar_url = avatar_url
 
     user.followers, user.following, user.unfollowers, user.fans = followers, following, unfollowers, fans
+    if not new:
+        user.recent_follows, user.recent_unfollows = follows, unfollows
+        user.follows = follows + user.follows
+        user.unfollows = unfollows + user.unfollows
+
     user.save()
 
     return JsonResponse({'status': 'success'})
@@ -73,18 +83,6 @@ def userProfile(request, username):
     except User.DoesNotExist:
         return JsonResponse({'error': 'User not found'}, status=404)
     
-    day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
-    week_ago = datetime.datetime.now() - datetime.timedelta(weeks=1)
-    last_day = Transaction.objects.filter(to_user=user, timestamp__gte=day_ago).order_by('-timestamp')
-    last_week = (Transaction.objects.filter(to_user=user, timestamp__gte=week_ago)).order_by('-timestamp')
-    last_month = Transaction.objects.filter(to_user=user, timestamp__gte=week_ago).order_by('-timestamp')
-    f_today = len(last_day.filter(action='Followed'))
-    u_today = len(last_day.filter(action='Unfollowed'))
-    f_week = len(last_week.filter(action='Followed'))
-    u_week = len(last_week.filter(action='Unfollowed'))
-    f_month = len(last_month.filter(action='Followed'))
-    u_month = len(last_month.filter(action='Unfollowed')) 
-
     response = {
         'general': {
             'username': user.username,  # Instagram username
@@ -97,23 +95,10 @@ def userProfile(request, username):
             'unfollower_count': len(user.unfollowers), # Number of unfollowers
         },
         'transactions': {
-            'num_followers_today': f_today, # Number of followers today
-            'num_unfollowers_today': u_today, # Number of unfollowers today
-            'net_followers_today': f_today - u_today, # Net followers today
-            'num_followers_week': f_week, # etc...
-            'num_unfollowers_week': u_week,
-            'total_transactions_week': f_week + u_week,
-            'num_followers_month': f_month,
-            'num_unfollowers_month': u_month,
-            'net_followers_month': f_month - u_month,
-            'last_follower': TransactionSerializer(last_month.filter(action='Followed').first()).data, # Last follower
-            'last_unfollower': TransactionSerializer(last_month.filter(action='Unfollowed').first()).data, # Last unfollower
-            'followers_today': TransactionSerializer(last_day.filter(action='Followed'), many=True).data, # Ordered list of followers today
-            'unfollowers_today': TransactionSerializer(last_day.filter(action='Unfollowed'), many=True).data, # Ordered list of unfollowers today
-            'followers_week': TransactionSerializer(last_week.filter(action='Followed'), many=True).data, # etc...
-            'unfollowers_week': TransactionSerializer(last_week.filter(action='Unfollowed'), many=True).data,
-            'followers_all': TransactionSerializer(Transaction.objects.filter(to_user=user, action='Followed').order_by('-timestamp'), many=True).data, 
-            'unfollowers_all': TransactionSerializer(Transaction.objects.filter(to_user=user, action='Unfollowed').order_by('-timestamp'), many=True).data
+            'recent_follows': user.recent_follows,
+            'recent_unfollows': user.recent_unfollows,
+            'all_follows': user.follows,
+            'all_unfollows': user.unfollows,
         },
         'followers': user.followers, # List of followers
         'following': user.following, # List of following
@@ -122,76 +107,76 @@ def userProfile(request, username):
     }
     return JsonResponse(response)
 
-@api_view(['GET'])
-def getRecentTransactions(request, username):
-    try:
-        user = User.objects.get(username=username)
-    except User.DoesNotExist:
-        return JsonResponse({'error': 'User not found'}, status=404)
+# @api_view(['GET'])
+# def getRecentTransactions(request, username):
+#     try:
+#         user = User.objects.get(username=username)
+#     except User.DoesNotExist:
+#         return JsonResponse({'error': 'User not found'}, status=404)
 
-    day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
-    week_ago = datetime.datetime.now() - datetime.timedelta(weeks=1)
-    last_day = Transaction.objects.filter(to_user=user, timestamp__gte=day_ago).order_by('-timestamp')
-    last_week = (Transaction.objects.filter(to_user=user, timestamp__gte=week_ago)).difference(last_day).order_by('-timestamp')
+#     day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
+#     week_ago = datetime.datetime.now() - datetime.timedelta(weeks=1)
+#     last_day = Transaction.objects.filter(to_user=user, timestamp__gte=day_ago).order_by('-timestamp')
+#     last_week = (Transaction.objects.filter(to_user=user, timestamp__gte=week_ago)).difference(last_day).order_by('-timestamp')
 
-    return JsonResponse({
-        'today': TransactionSerializer(last_day[:3], many=True).data,
-        'total_today': last_day.count(),
-        'this_week': TransactionSerializer(last_week[:3], many=True).data,
-        'total_this_week': last_week.count()
-    })
+#     return JsonResponse({
+#         'today': TransactionSerializer(last_day[:3], many=True).data,
+#         'total_today': last_day.count(),
+#         'this_week': TransactionSerializer(last_week[:3], many=True).data,
+#         'total_this_week': last_week.count()
+#     })
 
-@api_view(['GET'])
-def getAllTransactions(request, username):
+# @api_view(['GET'])
+# def getAllTransactions(request, username):
     
-    # Get user from database
-    try:
-        user = User.objects.get(username=username)
-    except User.DoesNotExist:
-        return JsonResponse({'error': 'User not found'}, status=404)
+#     # Get user from database
+#     try:
+#         user = User.objects.get(username=username)
+#     except User.DoesNotExist:
+#         return JsonResponse({'error': 'User not found'}, status=404)
     
-    # Get number of transactions to return, default to 0 if not provided or invalid
-    number = request.GET.get('number', default=0)
-    try:
-        number = int(number)
-        if number <= 0:
-            raise ValueError("Number must be positive")
-    except ValueError:
-        number = 0
+#     # Get number of transactions to return, default to 0 if not provided or invalid
+#     number = request.GET.get('number', default=0)
+#     try:
+#         number = int(number)
+#         if number <= 0:
+#             raise ValueError("Number must be positive")
+#     except ValueError:
+#         number = 0
 
-    day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
-    week_ago = datetime.datetime.now() - datetime.timedelta(weeks=1)
-    month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
+#     day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
+#     week_ago = datetime.datetime.now() - datetime.timedelta(weeks=1)
+#     month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
 
-    transactions_last_day = Transaction.objects.filter(to_user=user, timestamp__gte=day_ago)
-    transactions_last_week = Transaction.objects.filter(to_user=user, timestamp__gte=week_ago)
-    transactions_last_month = Transaction.objects.filter(to_user=user, timestamp__gte=month_ago)
-    transactions_all = Transaction.objects.filter(to_user=user).order_by('-timestamp')
+#     transactions_last_day = Transaction.objects.filter(to_user=user, timestamp__gte=day_ago)
+#     transactions_last_week = Transaction.objects.filter(to_user=user, timestamp__gte=week_ago)
+#     transactions_last_month = Transaction.objects.filter(to_user=user, timestamp__gte=month_ago)
+#     transactions_all = Transaction.objects.filter(to_user=user).order_by('-timestamp')
 
-    response = {
-        'last_day': {
-            'followed': len(transactions_last_day.filter(action='Followed')),
-            'unfollowed': len(transactions_last_day.filter(action='Unfollowed')),
-            'total': len(transactions_last_day)
-        },
-        'last_week': {
-            'followed': len(transactions_last_week.filter(action='Followed')),
-            'unfollowed': len(transactions_last_week.filter(action='Unfollowed')),
-            'total': len(transactions_last_week)
-        },
-        'last_month': {
-            'followed': len(transactions_last_month.filter(action='Followed')),
-            'unfollowed': len(transactions_last_month.filter(action='Unfollowed')),
-            'total': len(transactions_last_month)
-        },
-        'total': {
-            'followed': len(transactions_all.filter(action='Followed')),
-            'unfollowed': len(transactions_all.filter(action='Unfollowed')),
-            'total': len(transactions_all)
-        }
-    }
+#     response = {
+#         'last_day': {
+#             'followed': len(transactions_last_day.filter(action='Followed')),
+#             'unfollowed': len(transactions_last_day.filter(action='Unfollowed')),
+#             'total': len(transactions_last_day)
+#         },
+#         'last_week': {
+#             'followed': len(transactions_last_week.filter(action='Followed')),
+#             'unfollowed': len(transactions_last_week.filter(action='Unfollowed')),
+#             'total': len(transactions_last_week)
+#         },
+#         'last_month': {
+#             'followed': len(transactions_last_month.filter(action='Followed')),
+#             'unfollowed': len(transactions_last_month.filter(action='Unfollowed')),
+#             'total': len(transactions_last_month)
+#         },
+#         'total': {
+#             'followed': len(transactions_all.filter(action='Followed')),
+#             'unfollowed': len(transactions_all.filter(action='Unfollowed')),
+#             'total': len(transactions_all)
+#         }
+#     }
 
-    if number > 0:
-        response['transactions'] = TransactionSerializer(transactions_all[:number], many=True).data
+#     if number > 0:
+#         response['transactions'] = TransactionSerializer(transactions_all[:number], many=True).data
 
-    return JsonResponse(response)
+#     return JsonResponse(response)
