@@ -97,36 +97,13 @@ document.addEventListener('DOMContentLoaded', function () {
               localStorage.setItem('total_today', postData.total_today)
             }
 
-            if (data.total_this_week == 0 || data.total_today == 0) {
-              document.getElementById('unfollowers').innerHTML = (Math.round(postData.unfollowers.length / postData.followings.length * 100) || 0) + '%'
-              document.getElementById('fans').innerHTML = (Math.round(postData.fans.length / postData.followers.length * 100) || 0) + '%'
-              document.getElementById('nodata-profile').appendChild(link)
-              document.body.className = 'profile-body'
-              document.getElementById('nouser').className = 'hidden'
-              document.getElementById('nodata-profile').className = 'profile'
-            } else {
+            document.getElementById('unfollowers').innerHTML = (Math.round(postData.unfollowers.length / postData.followings.length * 100) || 0) + '%'
+            document.getElementById('fans').innerHTML = (Math.round(postData.fans.length / postData.followers.length * 100) || 0) + '%'
+            document.getElementById('nodata-profile').appendChild(link)
+            document.body.className = 'profile-body'
+            document.getElementById('nouser').className = 'hidden'
+            document.getElementById('nodata-profile').className = 'profile'
 
-              data.today.forEach(user => {
-                const transaction = document.createElement('div')
-                action = user.action.toLowerCase();
-                transaction.innerHTML = `<span class="username">@${user.from_user.username}</span> ${action} you`
-                transaction.setAttribute('class', 'transaction')
-                document.getElementById('today').appendChild(transaction)
-              });
-
-              data.this_week.forEach(user => {
-                const transaction = document.createElement('div')
-                action = user.action.toLowerCase();
-                transaction.innerHTML = `<span class="username">@${user.from_user.username}</span> ${action} you`
-                transaction.setAttribute('class', 'transaction')
-                document.getElementById('this-week').appendChild(transaction)
-              });
-
-              document.body.className = 'profile-body'
-              document.getElementById('nouser').className = 'hidden'
-              document.getElementById('profile').appendChild(link)
-              document.getElementById('profile').className = 'profile'
-            }
           }).catch(error => {
             console.error('Error fetching data:', error);
           });
