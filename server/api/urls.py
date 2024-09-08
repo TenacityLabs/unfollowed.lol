@@ -6,6 +6,4 @@ urlpatterns = [
     path('', getData),
     path('receive', receiveData),
     path('user/<str:username>/', userProfile),
-    # path('transactions/<str:username>/', getRecentTransactions),
-    # path('transactions/<str:username>/all/', getAllTransactions)
 ]

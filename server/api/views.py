@@ -1,4 +1,5 @@
 import datetime
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from server.serializers import TransactionSerializer, UserProfileSerializer, UserSerializer
@@ -9,6 +10,7 @@ from django.db import transaction
 import humanize
 from django.utils import timezone
 
+
 @api_view(['GET'])
 def getData(request):
     person = {'name':'Edison', 'age': 18}
@@ -18,10 +20,14 @@ def getData(request):
 def receiveData(request):
     
     data = json.loads(request.body)
-    username = data.get('username')
+    username = data.get('username').strip()
     insta_name = data.get('insta_name')
     avatar_url = data.get('avatar_url')
     new = False
+    print(f'Received from user {username}, {insta_name}')
+
+    if not username:
+        return JsonResponse({'error': 'Username is required'}, status=400)
     try:
         user = User.objects.get(username=username)
     except User.DoesNotExist:
@@ -34,6 +40,9 @@ def receiveData(request):
         following = user_data['followings']
         unfollowers = user_data['unfollowers']
         fans = user_data['fans']
+
+        print(f'Processing {username}, {insta_name} with {len(followers)} followers and {len(following)} followings')
+
 
     if user.username:
         old_followers = [(follower['username'], follower['insta_name'], follower['avatar_url']) for follower in user.followers]

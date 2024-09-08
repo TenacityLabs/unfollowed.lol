@@ -1,7 +1,7 @@
 
 chrome.runtime.onInstalled.addListener(function() {
   chrome.tabs.create({
-    url: 'https://randomthinghere.notion.site/unfollowed-lol-c02a5cfa6b544585b201d40160c08367',
+    url: 'https://unfollowed.lol/setup',
     active: true
   });
   return false;
@@ -77,7 +77,7 @@ async function userFollowing(username, self) {
         .then((res) => res.json())
         .then((res) => {
           has_next = res.data.user.edge_followed_by.page_info.has_next_page
-          if (res.data.user.edge_followed_by.count > 4999) {
+          if (res.data.user.edge_followed_by.count > 9999) {
             famous = true;
             has_next = false;
             return
@@ -114,7 +114,7 @@ async function userFollowing(username, self) {
         .then((res) => res.json())
         .then((res) => {
           has_next = res.data.user.edge_follow.page_info.has_next_page;
-          if (res.data.user.edge_follow.count > 4999) {
+          if (res.data.user.edge_follow.count > 9999) {
             famous = true;
             has_next = false;
             return

@@ -8,6 +8,9 @@ class User(models.Model):
     avatar_url = models.URLField(max_length=400, blank=True)
 
     # interaction data
+    username = models.CharField(max_length=100, default='', blank=False, null=False)
+    insta_name = models.CharField(max_length=100, blank=True, null=True)
+    avatar_url = models.URLField(max_length=400, blank=True, null=True)
     followers = JSONField(default=list, blank=True)
     following = JSONField(default=list, blank=True)
     fans = JSONField(default=list, blank=True)

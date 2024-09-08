@@ -33,16 +33,23 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
-function handleButtonClick(event,my_username) {
+function handleButtonClick(event, my_username) {
   event.stopPropagation();
 
   const username = event.target.getAttribute('data-username');
   const buttons = document.getElementsByClassName('custom-ig-button')
   const self = username === my_username
-  if (buttons.length !== 1) {
+  if (buttons.length < 1) {
     alert('Unexpected error, cannot find processing user button')
     return
   }
+  // If there are more than 1 button, delete all except 1
+  if (buttons.length > 1) {
+    for (let i = buttons.length - 1; i > 0; i--) {
+      buttons[i].parentNode.removeChild(buttons[i]);
+    }
+  }
+
   const button = buttons[0]
   if (button.textContent === 'View Analytics') {
     window.location.href = `https://unfollowed.lol/user/${username}`
@@ -57,8 +64,6 @@ function handleButtonClick(event,my_username) {
     console.log(postData)
 
     try {
-      // TODO: Update this to put into .env or remember to switch during production
-      // TODO: Use django api
       if (postData.private_error) {
         button.style.display = 'none'
         alert('This user is private and you are not following them. Please follow them to get analytics.')
@@ -90,7 +95,7 @@ function handleButtonClick(event,my_username) {
 
       button.textContent = 'View Analytics'
       button.disabled = false
-      
+
       console.log('Response from Django API:', data);
     } catch (error) {
       button.textContent = 'Process User'
@@ -105,11 +110,10 @@ function handleButtonClick(event,my_username) {
 // TODO: This should check for valid routes, also, this should only work on actual usernames, not random <h2> elements
 function injectButtonsAndListeners() {
   // Remove existing buttons to prevent duplicates
-  const existingBtns = document.querySelectorAll('.custom-ig-button')
+  const existingBtns = document.getElementsByClassName('custom-ig-button')
   if (existingBtns.length > 0) {
     return
   }
-
 
   // Find all <h2> elements (usernames) and inject buttons
   const sectionElements = document.querySelectorAll('section')
@@ -117,27 +121,27 @@ function injectButtonsAndListeners() {
   if (settingsElements.length === 0) {
     return
   }
-  let profileElement = settingsElements[0]
+  let profileElement = settingsElements[1]
+  const profileBarToInject = profileElement.firstChild.firstChild
+  const settingsIcon = profileBarToInject.lastElementChild
   while (profileElement.firstElementChild) {
     profileElement = profileElement.firstElementChild
   }
-  if (profileElement.tagName !== 'H2' && profileElement.tagName !== 'H1') {
+  if (profileElement.tagName !== 'SPAN') {
     return
   }
   const username = profileElement.textContent.trim()
 
-  settingsElements.forEach(elem => {
-    const button = document.createElement('button');
-    button.textContent = 'Process User';
-    button.setAttribute('data-username', username); // Store the username in the button
-    button.addEventListener('click', function(event) {
-      handleButtonClick(event, username);
-    }); // Add click event listener
-    button.classList.add('custom-ig-button'); // Add a class to identify buttons added by your extension
-    button.classList.add('gradient-border');
+  const button = document.createElement('button');
+  button.textContent = 'Process User';
+  button.setAttribute('data-username', username); // Store the username in the button
+  button.addEventListener('click', function (event) {
+    handleButtonClick(event, username);
+  }); // Add click event listener
+  button.classList.add('custom-ig-button'); // Add a class to identify buttons added by your extension
+  button.classList.add('gradient-border');
 
-    elem.parentNode.insertBefore(button, elem.nextSibling);
-  })
+  profileBarToInject.insertBefore(button, settingsIcon.nextSibling);
 }
 
 // Observe changes in the DOM
