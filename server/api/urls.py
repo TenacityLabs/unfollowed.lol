@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import getData, receiveData, userProfile #, getRecentTransactions, getAllTransactions
+from .views import getData, receiveData, userProfile
 
 urlpatterns = [
     path('', getData),
