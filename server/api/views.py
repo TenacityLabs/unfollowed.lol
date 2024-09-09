@@ -2,6 +2,7 @@ import datetime
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from server.models import User
 from django.http import JsonResponse
 import json
 from django.db import transaction
@@ -18,9 +19,7 @@ def getData(request):
 def receiveData(request):
     
     data = json.loads(request.body)
-    username = data.get('username')
-    if username:
-        username = username.strip()
+    username = data.get('username').strip()
     insta_name = data.get('insta_name')
     avatar_url = data.get('avatar_url')
     new = False
