@@ -49,9 +49,14 @@ def receiveData(request):
         current_followers = [(follower['username'], follower['insta_name'], follower['avatar_url']) for follower in followers]
         current_usernames = {tup[0] for tup in current_followers}
 
-        unfollows = [(follower['username'], follower['insta_name'], follower['avatar_url']) for follower in (old_usernames - current_usernames)]
-        follows = [(follower['username'], follower['insta_name'], follower['avatar_url']) for follower in (current_usernames - old_usernames)]
+        # Fix: Create dictionaries for easy lookup
+        old_followers_dict = {f[0]: f for f in old_followers}
+        current_followers_dict = {f[0]: f for f in current_followers}
 
+        # Fix: Use the dictionaries to create unfollows and follows
+        unfollows = [old_followers_dict[username] for username in (old_usernames - current_usernames)]
+        follows = [current_followers_dict[username] for username in (current_usernames - old_usernames)]
+        
         # for follower in (old_usernames - current_usernames):
         #     follower_tuple = next(tup for tup in old_followers if tup[0] == follower)
         #     Transaction.objects.create(from_user = {'username': follower, 'insta_name': follower_tuple[1], 'avatar_url': follower_tuple[2]}, to_user = user, action = 'Unfollowed').save()
