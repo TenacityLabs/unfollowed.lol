@@ -19,8 +19,6 @@ def getData(request):
 def receiveData(request):
     if not request.body:
         return JsonResponse({'error': 'Empty request body'}, status=400)
-
-    print("This is the received data", request.body)
     
     try:
         data = json.loads(request.body)
@@ -31,6 +29,7 @@ def receiveData(request):
     insta_name = data.get('insta_name')
     avatar_url = data.get('avatar_url')
     new = False
+    
     print(f'Received from user {username}, {insta_name}')
 
     if not username:
