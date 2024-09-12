@@ -17,8 +17,16 @@ def getData(request):
 
 @api_view(['POST'])
 def receiveData(request):
+    if not request.body:
+        return JsonResponse({'error': 'Empty request body'}, status=400)
+
+    print("This is the received data", request.body)
     
-    data = json.loads(request.body)
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError as e:
+        return JsonResponse({'error': f'Invalid JSON: {str(e)}'}, status=400)
+    
     username = data.get('username').strip()
     insta_name = data.get('insta_name')
     avatar_url = data.get('avatar_url')
