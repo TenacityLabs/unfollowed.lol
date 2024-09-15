@@ -25,7 +25,9 @@ def receiveData(request):
     except json.JSONDecodeError as e:
         return JsonResponse({'error': f'Invalid JSON: {str(e)}'}, status=400)
     
-    username = data.get('username').strip()
+    username = data.get('username')
+    if username is not None:
+        username = username.strip()
     insta_name = data.get('insta_name')
     avatar_url = data.get('avatar_url')
     new = False
