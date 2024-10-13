@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("server", "0011_auto_20240905_0336"),
+        ("server", "0007_alter_user_avatar_url"),
     ]
 
     operations = [
